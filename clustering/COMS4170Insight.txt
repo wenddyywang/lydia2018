@@ -1,0 +1,180 @@
+should have started with this more scalable fix
+sometimes we can benefit from different views and learn from them
+how behind I was with tech experience and wasn't aware of the amazing talent around me
+swallow your pride and ask for help
+always give myself more time to travel to new places to account for delays in transportation and getting lost
+whenever developing an application based on certain requirements, always think through from different perspectives on what can be some potential bottlenecks on the performance of an app
+the importance of consistently questioning one's self over choice of design for a client's use and whether all information over a particular system is being correctly applied for optimal performance
+besides considering fluid dynamics of the liquid extrusion, there were also basic things to think about, like setup and cleanup of the design
+I was too sure about my own plans, how I had to become more adaptable having more back-up plans and to understand the professor's perspectives, and to take into account that there are so many people in the world who want so many things that are so similar to things that I want
+user interfaces, and presentation in general, isn't just a concern for large-scale, polished tech companies. They are necessary to interact with and generate trust in smaller projects as well
+not to be ashamed to ask questions
+importance of taking your own happiness in consideration before making long-term decisions that might benefit you in the future
+study not just from professor and TA but also my classmates as well
+it's also important to pay attention to what people with more experience and knowledge may advice
+be less cynical to new approaches to problems that I had not previously considered and to extend the benefit of the doubt when I am unsure about something
+we can not always make a big break, sometimes a small change or a small innovation also needs lots of effort. So what I learn is to pay attention to the details, they are not easy I can not ignore the health
+when I were wrong sometime, I should be patient to think and solve the problem with group members together with more discussions and meetings
+people's advice, especially people older than me, does really helpful
+the ultimate user's feeling also matters, even more than the technology itself
+the hard thing about hard things is putting forward the intellectual honesty and courage to stay with the hard stuff, how to not take my learning for granted
+my lesson about lecture habits, and still sit as close to the front as I can today
+it is more productive to compromise than try to win an argument
+it's really important to get to know people well, how they think and why they interact with the world around them a certain way, before I make action/design choices
+always backup and track my code changes even if it is a small personal project
+the importance of attention to detail, double-checking work, coming to terms with mistakes, and resilience
+one can never "over communicate" with their team
+there are actions beyond just moral issues that implicated those around you...especially when it comes to the user experience online
+seeking more alternative options in the event of a timeline issue with the main option
+the importance of working through a problem on paper with a team member before implementing it
+I fully understood the concept and was able to implement shading calculations correctly 
+I've overall become more organized make sure everything is in it's right place
+made me realize the importance of VCS and it's key role in software development process - you can't always keep track of everything in mind, especially working in a team environment
+my phones time is in military time
+I should always be cognizant of people’s inputs, because I just might be wrong—and it’s okay to admit that
+the importance of having a clear plan in mind before approaching a problem and also executing it in an organized way
+better insight into efficient teamwork, and when I should admit that I need a second hand
+I always try to first communicate with my team members and know what to do in the next step
+you should never be too invested in anything until you get to experience it first hand and there is no shame in following your heart
+sometimes inspiration is needed and it usually comes from other parts of our life
+my group member pointed out that I was returning in a void statement, when my group member was supposed to use the returned value in his portion
+firstly, always keep a backup, no matter how small the modification is, because nobody wants to do a same thing for two times; secondly, delete all the trash in time
+clearly indicated deadlines and where we’re at in the process at any given time
+not every concept will be clear to me at its first instance, and that's okay. Now, I'm not afraid to be fearless and ask for help and working together in study groups
+always ensured that I complete my work on time, and if not, ensured that I communicate my difficulties to my immediate supervisors so that they are not caught off-guard
+ask for help earlier when struggling and not assume that others would not know better than I would
+people were very helpful and humbly answered all the queries that I posted
+do better in my time management, and when finding any problems, I should consult others for solutions in order to cut down the time I spent on thinking the problem by myself
+could have been involved more in public interaction and thus built a better network
+figuring what kind of design I do want to pursue
+Communication and a greater attention to detail 
+how important design principles are in tech and how much I have to learn about them
+devote way more time to brush up the basics and start early to have a better preparation
+not to assume things about others without actually experiencing concrete information or responses 
+should double check sources and not always take things at face value
+whenever I work on a team project I try to understand each person’s underlying motivations and goals
+Don't take 7 courses in the same semester
+more openminded and ambitious with the projects I attempt
+noticing when I'm rushing missing details, as well as the value of being self aware when receiving feedback, and then trying to convey what led to issues whilst taking ownership for what I did wrong
+be more perceptive of my opportunities and my life decisions
+if I had communicated my roadblocks more quickly to my superiors, I would have reached my goal sooner
+I need to plan better
+We shouldn't use any algorithm without getting fully understanding towards it or implement it by ourselves
+have to surround myself with people who I believe to push me, people who hold me to a standard I struggle to meet, but who inspire me to attain that level of quality in my own person
+read the documentation for everything
+picked up his advice and dropped my preconceived notions about how to program
+empathy and "imagining yourself in someone else's shoes" are crucial skills for any kind of project aimed at a specific target audience
+can take something imperfect and still find ways in which it is valid and useful without ignoring or hiding it's problems
+academic modesty and the dangers of thinking inside the box
+whenever you are learning something new, always make sure that you really understand it instead of having a shallow idea and starting to feel good about yourself
+select major I really interested in
+having an extremely capable product is essentially useless if the user does not have intuitive access to those very functions
+Regardless of where the information comes from, if I am using it, I must understand it at its source
+I would like to borrow something from someone, I know that I have to inform that person
+commitment is the first step to success
+slow down my thinking and consider different approaches before starting a project, and realized the influential power of teammates
+asking for help from a coworker or supervisor is often a good precaution
+professors, instructors, and other people placed in positions of direction or management are there because 1) I need help and 2) they are capable of giving it. I also learned, more generally, that I should be less stubborn.
+it's ok to rely on other people and not everything has to fall on my shoulders
+be more humble and learn from other people in my work environment
+importance of knowing your audience 
+not to assume without concrete information
+clean design does not necessarily mean minimalism, and user testing is invaluable to the process of design
+gained valuable insight into the aspects that I had neglected to inspect before proposing the spec
+when working on a project/feature that multiple teams need to be involved in, one needs to collaborate with the teams when coming up with the specs for the project
+the true importance of orienting one's compass before just diving into the workflow
+1. routinely trying to explain things to myself or other people to poke holes in what I know 2. starting from first principles as often as I can
+the best way to approach the problem was to focus on many different types of users and not only the higher ranked users
+people only became skilled at something because they spent a lot of time and energy learning the skill
+debugging
+explore more about front end development tools
+had to choose and prioritise in order to give each task sufficient time and dedication
+the important thing when unsure about something is to talk to somebody who's also working on it
+be more open minded and to speak up when I have questions or concerns
+make up a frame and then add features little by little, and at the meantime we should keep testing the new features
+if one finds a problem in the process or that their approach is wrong, it is never too late to stop and reassess
+manage my tasks more accurately and report on issues I found hard to handle alone
+creative leadership and how much of it centers around giving the talented group I have brought together the space to be amazing
+you not only need to know how to code, but also need to know how to design
+it is not only vital for team members to split up work evenly, but it is also important to establish early on exactly how this splitting up of work can be made as seamless as possible. 
+skills in user interface design is really important
+be more suspicious when I feel too good (that is, elitist) for something unfamiliar
+I had all the information in my story it's just the way I was presenting it that was wrong
+A product is nothing without the customer Think carefully about what you are optimizing for
+The newest solutions might not be the best solutions in terms of completion level
+sometimes the simplest can sometimes beat the most innovative
+move on into a field that interested me
+always double-check and test everything in computer science, and to not blindly rely on documentation that might be out of date communication was vital as soon as you realize that something is wrong
+the importance of UI/UX and started to learn how to make better user interface
+there is no one right way to do things so it's best to keep an open mind
+I should have learned to take things little by little, but I did not. I still have maybe not learned this but I did learn how to work with React
+not to make assumptions about ANYTHING
+have an open mind when I meet new people and give myself time to get to know the person
+group management with early start
+the importance of communicating immediately with team members if a problem arises or some other obstacle stands in my way
+not take anything for granted. Having preconceptions towards something could be dangerous. When in doubt, it's better to confirm than act incautiously easily get overwhelmed when I tried hard to solve an issue caused by myself but could not do anything helpful
+give up on some portions to get the majority of the credit
+it's okay to be wrong as long as I stay tenacious and learn from the error messages I get it is up to me to make sure everything is perfectly aligned to pave the way for meaningful code
+re-writing my life-script requires me to be conscious of the decisions that I am making at any given moment. Furthermore, I discovered that the more I get to know myself by applying sociology and psychology concepts, the better I can understand human interaction through the application of concepts to others
+how important it was that we paid attention to how our platform provided unique features that got our users excited even while performing often mundane tasks 
+spot mistakes early on and also to ask for guidance and mentorship when needed
+take a step back, and take into account want I really want, and not what is assumed of me
+every decision should be grounded in data and rigorous research as opposed to fuzzy gut feelings
+enthusiasm towards CS and never give up
+enjoy the novel experience working with people with less technical backgrounds, as they tend to look at things from a different perspective and are creative in a new way
+the valuable less to be fully responsible for any work that I am involved in
+importance of communication in teamwork
+we spend an incredibly unnecessary amount of time trying to look at the specifics, and think about problems with their intricate details and convoluted meanings, but the beauty of computer science is that sometimes, its just a simple little thing that we overlook
+never think my effort is enough, and do as best as I can
+I needed to change course instead of staying in an industry that wasn’t fulfilling me
+it is important to step up and communicate, especially when I'm not sure of what's going on
+I need to really understand something in order to memorize it better
+honestly is indeed the best policy
+the importance of sharing information in a team
+we need to add functional click on webpages, using JQuery or functions in HTML called JSP page
+how to communicate better and the importance of analyzing and solving technical problems faster
+I should have learned to read between the lines, to see that whatever was causing her shortcomings as a writer, I could have seen things from her perspective and provided tangible help
+divide my project into small steps, and check whether it works after each small step
+to be a good programmer, I not only need to know how to code, but also need to learn how to design
+when designing features, target problems that users do have rather than invent the problems and then try to solve them
+front-end development tools, but also to ask for help and guidance from managers when needed
+Do not assume there are tutorials online for everything. Don’t give up if there isn’t one. Always explore the official docs or even the source, there might be chance.
+to treat time as a limited resource, to know my own limits, and most importantly, to be humble in my path to learning no resource is infinite, and careful thought and self-control are an imperative for personal growth
+ou shouldn't be embarrassed or afraid of asking for help
+I'm plugging it in the front next time
+be curious before providing criticism
+take time off 
+having a good UI helps build a terrific first impression which goes a long way in the end user's satisfaction in a product
+thinking of creative ways of using the right digital tools allows for much more reflexible solutions to many problems
+we first need to know who are our targets and their needs
+be vigilant about coordinating with people
+I have no chance before a girl who prioritizes academics over all other things in life
+never to neglect details
+refine my design and learn how to write scalable and maintainable react code
+not prematurely judge or assess situations; not only are supposedly catastrophic outcomes rarely so catastrophic, they can in fact be quite the opposite
+its best to take the risk and to hear out other people and take a decision without looking back
+every situation can be approached from multiple angles, and that one should strive to approach from the most positive angle they can
+how incredibly complex and creative design could be, with extreme out of box thinking and pattern matching
+think about what I care about most deeply first and to prioritize based on that
+I might ignore her feelings sometimes. I learned that I should care for her more and had a better way of dealing with argument other than not talking and breaking both our hearts
+my haste and arrogance caused me to make a big blunder and lose the title. I believe the experience was very humbling
+it would never be late if you want to have a change
+be more open minded about new or unfamiliar tech and platforms and being more mindful about using the right tool for the right job and exploring options to be sure of that and to hear out my teammates more
+a smarter way to approach volatile investing like this: while it is tempting for me to just sit and wait and hope that it goes up, I believe that I need to put precautionary methods in place to capitalize on the volatile nature of bitcoin. I need to come up with pre-set rules to determine when I will buy and sell instead of just ad-hocly hoping that I get lucky as I am doing now
+I am by no means the average user and that it's important to actually speak to the people you're building things for
+it was my fault for not emphasizing to all the instructors the importance of proper communication with parents/students. I also had not made sure to clarify this specifically to the newer instructor most likely because I was accustomed to assuming that all the instructors knew the routines/guidelines/policies of their job. Additionally, I should make sure that I myself know of any complaints/requests made by parents because they are paying in order for the students to show improved academic performance in school. I made sure to communicate with the parent properly to amend and resolve the situation. 
+"Fine" doesn't actually mean "fine"
+You can't just build a product, there's a lot more crucial nontechnical work that occurs behind the scenes
+the importance of open communication
+as I expand my social interactions circles, my worldview is expanded to include more ideas and possibilities. Additionally, I learned that interaction and collaboration between people in seemingly unrelated fields can foster borrowing and combining methods in different fields and lead to new areas of interdisciplinary research
+look before you leap
+never close of or cut off someones opinion-- rather I should be open to whatever they have to say, whether I think it's right or wrong. I should always question preconceived judgements I make
+one could do production level machine learning by using only a few thousand hand labeled training data
+should not make commitments that drain me and leave me without sleep because I end up not being present in all of the things I do, and it is unhealthy
+replying angrily will often make things go worse. I learned to first calm down, think, and then try to calm the other person down to diffuse the situation
+I should look a bit farther ahead before attempting something that initially seems easier the key to learning something new is recognizing when you need help
+never started working on a computer without making sure an appropriate backup was done, and I have kept a robust and extensive backup of my own personal data at all times
+I learnt Bootstrap and Flask by myself
+we need to have paging mechanism otherwise user has to scroll through endlessly to find his/her options. Also, when a user clicks back button, he / she has to go back to the same location on the page where the user was previously and not the start of the page
+I would not believe in something that I think it is. I would verify the answer I got and make sure I am right before I tell somebody about it
+one of the most valued characteristics of a good UI is letting people have as much control as possible, so as to satisfy all groups of users

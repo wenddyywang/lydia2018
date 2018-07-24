@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/wendywang/Desktop/lydia2018/word2vec/log/model.ckpt"
+all_model_checkpoint_paths: "/Users/wendywang/Desktop/lydia2018/word2vec/log/model.ckpt"

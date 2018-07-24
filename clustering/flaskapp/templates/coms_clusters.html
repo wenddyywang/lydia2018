@@ -1,0 +1,135 @@
+<html>
+
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+<style>
+.clusterData{
+    border-bottom: 1px solid black;
+    padding: 10 10;
+}
+#clusterSummaries{
+	border-bottom: 1px solid black;
+	padding: 10 10;
+}
+.clusterTitle{
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5;
+}
+.spaceBelow{
+    margin-bottom: 20;
+}
+.wordHeader, .docHeader{
+	font-size: 1.25rem;
+    margin-bottom: 10;
+}
+#totalDocCount{
+	font-size: 1.25rem;
+	margin-bottom: 10;
+}
+.docBody{
+	overflow-y: scroll;
+	height: 200px;"
+}
+.summary{
+	float: left;
+	text-align: center;
+}
+#header{
+	padding-top: 10;
+}
+</style>
+</head>
+
+<body>
+	<!-- <script src="coms_cluster_data.js"></script> -->
+	<script src="{{url_for('static', filename='coms_cluster_data.js')}}"></script> 
+	<script>
+		$(document).ready(function(){
+			// console.log(data);
+    			for(d in data){
+    				if(d === "Document count"){
+    					var row = "<div class=\"row\" id=\"header\"><div class=\"col-md-9\"><div id=\"totalDocCount\"> Total Document Count: " + data[d] + "</div></div><div class='col-md-3'><button type=\"button\">Recompute Clusters</button></div></div><div class='row'><div class='col-md-12' id='clusterSummaries'><div>Overview: </div></div></div>";
+    					$(".container").append(row);
+    					// Append 'summaries' of clusters to header
+    					var numClusters = 0;
+    					for(d in data){
+    						if(d !== "Document count"){
+    							var id = d.replace(/\s+/g, '-');
+    							$("#clusterSummaries").append("<div class='summary'><a href='#" + id + "'>" + d + "</a><br>" + data[d][0]["word"] + " (" + data[d][0]["word_weight"] + ")" + "</div>");
+    							numClusters = numClusters + 1;
+    						}
+    					}
+    					var screenPercent = 100/numClusters + "%";
+    					$('.summary').css('width', screenPercent);
+    				}
+    				else{
+	    				var id = d.replace(/\s+/g, '-');
+	    				var row = "<div class=\"row clusterData\" id=\"" + id +"\"><div class=\"col-md-3\"><div class=\"clusterTitle\">"+ d +"</div><div class=\"wordHeader\">Top Words: </div></div><div class=\"col-md-9\"><div class=\"docHeader\"><div class='docCount'></div></div><div class='docBody'></div></div></div>";
+						// console.log(id);
+						// console.log(data[d][0]);
+						$(".container").append(row);
+						var word = "";
+						var sentence = "";
+						var letter = 65;
+						for(var i = 0; i<data[d].length; i++){
+							for (var p in data[d][i]) {
+								if(p === "word"){
+									word += (i+1) + ". <b>" + data[d][i][p] + "</b> ";
+								}
+								else if(p === "word_weight"){
+									word += "(" + data[d][i][p] + ")<br>";
+									$('#' + id + ' .col-md-3').append("<div>"+ word +"</div>");
+									word = "";
+								}
+								else if(p === "sentence"){
+									sentence += "\"..." + data[d][i][p] + "\" ";
+									letter = letter + 1;
+								}
+								else if(p === "sent_weight"){
+									sentence += "(" + data[d][i][p] + ")<br>";
+									$('#' + id + ' .docBody').append("<div class='spaceBelow'>"+ sentence +"</div>");
+									sentence = "";
+								}
+								else if(p === "doc_count"){
+									$('#' + id + ' .docCount').append("<div> Documents in cluster: "+ data[d][i][p] +"</div>");
+								}
+								
+							}				
+						}    					
+    				}
+
+
+				}
+			//});
+		})
+		
+	</script>
+
+	<div class="container">
+<!-- 
+		<div class="row">
+			<div class="col-md-3">
+				One of three columns
+			</div>
+			<div class="col-md-9">
+				One of three columns
+			</div>
+
+		</div>
+
+		<div class="row">
+			<div class="col-md-3">
+				One of three columns
+			</div>
+			<div class="col-md-9">
+				One of three columns
+			</div>
+
+		</div>
+ -->
+	</div>
+</body>
+
+</html>
