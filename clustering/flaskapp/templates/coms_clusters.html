@@ -2,6 +2,7 @@
 
 <head>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<!-- <meta http-equiv="refresh" content="60"/>  -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 <style>
 .clusterData{
@@ -50,7 +51,7 @@
 			// console.log(data);
     			for(d in data){
     				if(d === "Document count"){
-    					var row = "<div class=\"row\" id=\"header\"><div class=\"col-md-9\"><div id=\"totalDocCount\"> Total Document Count: " + data[d] + "</div></div><div class='col-md-3'><button type=\"button\">Recompute Clusters</button></div></div><div class='row'><div class='col-md-12' id='clusterSummaries'><div>Overview: </div></div></div>";
+    					var row = "<div class=\"row\" id=\"header\"><div class=\"col-md-9\"><div id=\"totalDocCount\"> Total Document Count: " + data[d] + "</div></div><div class='col-md-3'><form action='/recluster/' method='post'><button name='reclusterBtn' id='reclusterBtn' type='submit'>Recalculate Clusters</button></form></div></div><div class='row'><div class='col-md-12' id='clusterSummaries'><div>Overview: </div></div></div>";
     					$(".container").append(row);
     					// Append 'summaries' of clusters to header
     					var numClusters = 0;
@@ -107,7 +108,7 @@
 		
 	</script>
 
-	<div class="container">
+	<div class="container" id = "pageContainer">
 <!-- 
 		<div class="row">
 			<div class="col-md-3">
