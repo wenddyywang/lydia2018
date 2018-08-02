@@ -74,7 +74,7 @@ def reset_stop_words():
         stop_words = []
         for row in reader:
             stop_words.append(row[0])
-    f.close() 
+    f.close()
 
 def save_stop_words():
     with open("stopwords.csv", 'w') as f:
@@ -282,9 +282,15 @@ def get_top_words(k, sorted_terms):
             top_words[sorted_terms[i][j][0].lower()] = sorted_terms[i][j][1]
     return top_words
 '''
+stop_words = read_stop_words("stopwords.csv")
 
-def run(true_k=5):
-    stop_words = read_stop_words("stopwords.csv")
+def run(added_stop_word="", removed_stop_word="", true_k=5):
+    if not added_stop_word == "":
+        print("added " + added_stop_word)
+        add_stop_word(added_stop_word)
+    if not removed_stop_word == "":
+        print("removed " + removed_stop_word)
+        remove_stop_word(removed_stop_word)
 
     raw_docs = read_documents("COMS4170Insight.txt")
 
@@ -344,13 +350,11 @@ def run(true_k=5):
         #print("Cluster %d:" % i)
         data['Cluster %d' % i] = []
         keys = []
-        print("cluster " + str(i))
         for key in list(current_clusters[i].keys())[:words_per_cluster]:
             keys.extend(key.split())
             weight = "{:4.2f}".format(current_clusters[i][key]*100) #make decimal into a percentage and format
             #print("{}: {}%".format(key, weight))
             original_key = ""
-            print(key)
             for word in key.split():
                 shortest_word = list(token_dict[word])[0]
                 for val in list(token_dict[word])[1:]:
