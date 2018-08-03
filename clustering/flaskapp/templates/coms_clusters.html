@@ -11,6 +11,10 @@
 <meta http-equiv="Expires" content="0" />
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 <style>
+button{
+	margin: 10;
+	float: right;
+}
 .clusterData{
     border-bottom: 1px solid black;
     padding: 10 10;
@@ -24,9 +28,9 @@
     font-weight: bold;
     margin-bottom: 5;
 }
-#form{
+/*#form{
 	float: right;
-}
+}*/
 .spaceBelow{
     margin-bottom: 20;
 }
@@ -60,7 +64,7 @@
 			// console.log(data);
     			for(d in data){
     				if(d === "Document count"){
-    					var row = "<div class=\"row\" id=\"header\"><div class=\"col-md-3\"><div id=\"totalDocCount\"> Total Document Count: " + data[d] + "</div></div><div class='col-md-9'><form action='{{ url_for('recluster') }}' method='post' id='form' name='stopwordInput'>Add Stop Word: <input type='text' name='addStopword'> Remove Stop Word: <input type='text' name='removeStopword'> <button name='reclusterBtn' id='reclusterBtn' type='submit'>Recalculate Clusters</button></form><br>{% block content %}teapot{% endblock %}</div></div><div class='row'><div class='col-md-12' id='clusterSummaries'><div>Overview: </div></div></div>";
+    					var row = "<div class='row' id='header'><div class='col-md-12'><div id='totalDocCount'> Total Document Count: " + data[d] + "</div></div></div><div class='row'><div class='col-md-12'><form action='{{ url_for('recluster') }}' method='post' id='form' name='stopwordInput'>Add Stop Word: <input type='text' name='addStopword'> Remove Stop Word: <input type='text' name='removeStopword'> K: <input type='text' name='k'> N Top Words: <input type='text' name='nTopWords'><br><button name='reclusterBtn' type='submit' value='recalcDiffSeed'>Recalculate Clusters with New Seed</button><button name='reclusterBtn' type='submit' value='recalcSameSeed'>Recalculate Clusters</button> </form><br></div></div><div class='row'><div class='col-md-12' id='clusterSummaries'><div>Overview: </div></div></div>";
     					$(".container").append(row);
     					// Append 'summaries' of clusters to header
     					var numClusters = 0;

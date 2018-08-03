@@ -11,6 +11,7 @@ from stop_words import get_stop_words
 from nltk.stem.snowball import SnowballStemmer
 import json
 import os.path
+import random
 
 #https://stackoverflow.com/questions/11122291/python-find-char-in-string-can-i-get-all-indexes?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 def find_all_indices(s, ch):
@@ -271,7 +272,6 @@ def append_mark_tag(sentence, keys, token_dict, highlight_colors):
     return appended_sent.strip()
 
 
-
 '''
 def get_top_words(k, sorted_terms):
     top_words = {}
@@ -283,8 +283,17 @@ def get_top_words(k, sorted_terms):
     return top_words
 '''
 stop_words = read_stop_words("stopwords.csv")
+rand_int = random.randint(0, 1000)
+true_k = 5
+num_top_words = 7
 
-def run(added_stop_word="", removed_stop_word="", true_k=5):
+def new_seed():
+    global rand_int
+    rand_int = random.randint(0, 1000)
+    print("new seed: " + str(rand_int))
+
+def run(true_k=5, num_top_words=7, added_stop_word="", removed_stop_word=""):
+    print(rand_int)
     if not added_stop_word == "":
         print("added " + added_stop_word)
         add_stop_word(added_stop_word)
@@ -313,7 +322,7 @@ def run(added_stop_word="", removed_stop_word="", true_k=5):
         vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=(1,3), min_df=2)
         X = vectorizer.fit_transform(documents)
         # true_k = 5
-        model = KMeans(n_clusters=true_k, init='k-means++', max_iter=1000, n_init=1)
+        model = KMeans(n_clusters=true_k, init='k-means++', max_iter=1000, n_init=1, random_state=rand_int)
         model.fit(X)
         order_centroids = model.cluster_centers_.argsort()[:, ::-1]
         terms = vectorizer.get_feature_names()
@@ -335,14 +344,14 @@ def run(added_stop_word="", removed_stop_word="", true_k=5):
         num_per_cluster = frame['cluster'].value_counts()
         num_sentences_per_cluster = num_per_cluster.to_dict()
 
-        words_per_cluster = 7 #words are sorted, so this is number of top (heaviest weight) words
+        words_per_cluster = num_top_words #words are sorted, so this is number of top (heaviest weight) words
         num_sentences_shown = 3 #number of sentences to display per cluster
         #num_words_shown = 10 #number of words to display per sentence in cluster (can try to do this but is v hard)
         current_clusters = categorize_into_clusters(true_k, sorted_terms)
         #matched_sentences = match_top_sentences_to_cluster(true_k, clusters, sentences, sorted_terms, num_sentences_shown)
         matched_sentences = match_all_sentences_to_cluster(true_k, clusters, sentences, sorted_terms, num_sentences_per_cluster)
         if matched_sentences == False:
-            print(matched_sentences)
+            print(matched_sentences + ": CLUSTERS WERE INVALID")
 
     #WRITE TO JSON FILE
     data['Document count'] = len(documents)
