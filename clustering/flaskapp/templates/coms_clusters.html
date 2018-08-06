@@ -1,59 +1,68 @@
 <html>
 <head>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-<!--  <meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0" />
- <meta http-equiv="cache-control" content="max-age=0" />
- <meta http-equiv="expires" content="0" />
- <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
- <meta http-equiv="pragma" content="no-cache" /> -->
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
-<style>
-button{
-	margin: 10;
-	float: right;
-}
-.clusterData{
-    border-bottom: 1px solid black;
-    padding: 10 10;
-}
-#clusterSummaries{
-	border-bottom: 1px solid black;
-	padding: 10 10;
-}
-.clusterTitle{
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 5;
-}
-/*#form{
-	float: right;
-}*/
-.spaceBelow{
-    margin-bottom: 20;
-}
-.wordHeader, .docHeader{
-	font-size: 1.25rem;
-    margin-bottom: 10;
-}
-#totalDocCount{
-	font-size: 1.25rem;
-	margin-bottom: 10;
-}
-.docBody{
-	overflow-y: scroll;
-	height: 200px;"
-}
-.summary{
-	float: left;
-	text-align: center;
-}
-#header{
-	padding-top: 10;
-}
-</style>
+	<meta charset="utf-8">
+
+	<title>K-means Text Clustering</title>
+	<meta name="description" content="text clustering UI">
+	<meta name="author" content="wendy">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+	<!--  <meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0" />
+	 <meta http-equiv="cache-control" content="max-age=0" />
+	 <meta http-equiv="expires" content="0" />
+	 <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	 <meta http-equiv="pragma" content="no-cache" /> -->
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+	<style>
+	button{
+		margin: 10;
+		float: right;
+	}
+	.clusterData{
+	    border-bottom: 1px solid black;
+	    padding: 10 10;
+	}
+	#clusterSummaries{
+		border-bottom: 1px solid black;
+		padding: 10 10;
+	}
+	.clusterTitle{
+	    font-size: 1.5rem;
+	    font-weight: bold;
+	    margin-bottom: 5;
+	}
+	.docCount{
+		float: left;
+		width: 75%;
+	}
+	#header{
+		padding-top: 10;
+	}
+	.spaceBelow{
+	    margin-bottom: 20;
+	}
+	.wordHeader, .docHeader{
+		font-size: 1.25rem;
+	    margin-bottom: 10;
+	}
+	#totalDocCount{
+		font-size: 1.25rem;
+		margin-bottom: 10;
+	}
+	.docBody{
+		overflow-y: scroll;
+		height: 200px;"
+	}
+	.summary{
+		float: left;
+		text-align: center;
+	}
+/*	input[name='verifyCheck']{
+		vertical-align: middle;
+	}*/
+	</style>
 </head>
 
 <body>
@@ -64,7 +73,44 @@ button{
 			// console.log(data);
     			for(d in data){
     				if(d === "Document count"){
-    					var row = "<div class='row' id='header'><div class='col-md-12'><div id='totalDocCount'> Total Document Count: " + data[d] + "</div></div></div><div class='row'><div class='col-md-12'><form action='{{ url_for('recluster') }}' method='post' id='form' name='stopwordInput'>Add Stop Word: <input type='text' name='addStopword'> Remove Stop Word: <input type='text' name='removeStopword'> K: <input type='text' name='k'> N Top Words: <input type='text' name='nTopWords'><br><button name='reclusterBtn' type='submit' value='recalcDiffSeed'>Recalculate Clusters with New Seed</button><button name='reclusterBtn' type='submit' value='recalcSameSeed'>Recalculate Clusters</button> </form><br></div></div><div class='row'><div class='col-md-12' id='clusterSummaries'><div>Overview: </div></div></div>";
+    					var c = {{ count }}
+    					console.log(c)
+    					var row = "<div class='row' id='header'> \
+    									<div class='col-md-12'> \
+    										<div id='totalDocCount'> \
+    											Total Document Count: " + data[d] + "\
+    										</div> \
+    									</div> \
+    								</div> \
+    								<div class='row'> \
+    									<div class='col-md-12'> \
+    										<form action='{{ url_for('recluster', counter=count) }}' method='post' id='form' name='stopwordInput'>\
+    											Add Stop Word: \
+    											<input type='text' name='addStopword'> \
+    											Remove Stop Word: \
+    											<input type='text' name='removeStopword'> \
+    											K: \
+    											<input type='text' name='k'> \
+    											N Top Words: \
+    											<input type='text' name='nTopWords'> \
+    											<br> \
+    											<button name='reclusterBtn' type='submit' value='recalcDiffSeed'> \
+    												Recalculate Clusters with New Seed \
+    											</button> \
+    											<button name='reclusterBtn' type='submit' value='recalcSameSeed'> \
+    												Recalculate Clusters \
+    											</button> \
+    										</form>\
+    										<br> \
+    									</div> \
+    								</div> \
+    								<div class='row'> \
+    									<div class='col-md-12' id='clusterSummaries'> \
+	    									<div> \
+	    										Overview: \
+	    									</div> \
+    									</div> \
+    								</div>";
     					$(".container").append(row);
     					// Append 'summaries' of clusters to header
     					var numClusters = 0;
@@ -80,7 +126,27 @@ button{
     				}
     				else{
 	    				var id = d.replace(/\s+/g, '-');
-	    				var row = "<div class=\"row clusterData\" id=\"" + id +"\"><div class=\"col-md-3\"><div class=\"clusterTitle\">"+ d +"</div><div class=\"wordHeader\">Top Words: </div></div><div class=\"col-md-9\"><div class=\"docHeader\"><div class='docCount'></div></div><div class='docBody'></div></div></div>";
+	    				var row = "<div class='row clusterData' id='" + id +"'>\
+	    								<div class='col-md-3'>\
+	    									<div class='clusterTitle'>"+ d +"\
+	    									</div>\
+	    									<div class='wordHeader'>Top Words: \
+	    									</div>\
+	    								</div>\
+	    								<div class='col-md-9'>\
+	    									<div class='docHeader'>\
+	    										<div class='docCount'>\
+	    										</div>\
+	    										<div class='verifyCheckBox'>\
+			    									<form action='' method='post' name='verifiedCluster'>\
+			    										<input type='checkbox' name='verifyCheck' value='verified'> Mark Valid\
+			    									</form>\
+	    										</div>\
+	    									</div>\
+	    									<div class='docBody'>\
+	    									</div>\
+	    								</div>\
+	    							</div>";
 						// console.log(id);
 						// console.log(data[d][0]);
 						$(".container").append(row);
@@ -116,33 +182,11 @@ button{
 
 
 				}
-			//});
 		})
 		
 	</script>
 
 	<div class="container" id = "pageContainer">
-<!-- 
-		<div class="row">
-			<div class="col-md-3">
-				One of three columns
-			</div>
-			<div class="col-md-9">
-				One of three columns
-			</div>
-
-		</div>
-
-		<div class="row">
-			<div class="col-md-3">
-				One of three columns
-			</div>
-			<div class="col-md-9">
-				One of three columns
-			</div>
-
-		</div>
- -->
 	</div>
 </body>
 

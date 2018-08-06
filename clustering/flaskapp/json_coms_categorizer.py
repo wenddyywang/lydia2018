@@ -271,6 +271,19 @@ def append_mark_tag(sentence, keys, token_dict, highlight_colors):
             appended_sent += word + " "
     return appended_sent.strip()
 
+def sort_clusters_by_weight(data):
+    sorted_data = {}
+    sorted_data['Document count'] = data['Document count']
+    cluster_to_weight = dict()
+    for i in range(true_k):
+        cluster_to_weight['Cluster %d' % i] = float(data['Cluster %d' % i][0]['word_weight'])
+    #[(4, 34), (1, 39), (2, 87), (7, 110)]
+    sorted_cluster_to_weight = sorted(cluster_to_weight.items(), key=lambda x: x[1], reverse=True)
+    for i in range(true_k):
+        sorted_data['Cluster %d' % i] = data[sorted_cluster_to_weight[i][0]]
+    return sorted_data
+
+
 
 '''
 def get_top_words(k, sorted_terms):
@@ -292,7 +305,12 @@ def new_seed():
     rand_int = random.randint(0, 1000)
     print("new seed: " + str(rand_int))
 
-def run(true_k=5, num_top_words=7, added_stop_word="", removed_stop_word=""):
+def run(k=5, n=7, added_stop_word="", removed_stop_word=""):
+    global true_k
+    true_k = k
+    global num_top_words
+    num_top_words = n
+    
     print(rand_int)
     if not added_stop_word == "":
         print("added " + added_stop_word)
@@ -351,7 +369,8 @@ def run(true_k=5, num_top_words=7, added_stop_word="", removed_stop_word=""):
         #matched_sentences = match_top_sentences_to_cluster(true_k, clusters, sentences, sorted_terms, num_sentences_shown)
         matched_sentences = match_all_sentences_to_cluster(true_k, clusters, sentences, sorted_terms, num_sentences_per_cluster)
         if matched_sentences == False:
-            print(matched_sentences + ": CLUSTERS WERE INVALID")
+            print(str(matched_sentences) + ": CLUSTERS WERE INVALID")
+            new_seed()
 
     #WRITE TO JSON FILE
     data['Document count'] = len(documents)
@@ -395,13 +414,13 @@ def run(true_k=5, num_top_words=7, added_stop_word="", removed_stop_word=""):
                 'indicatorWords': list(doc_values[3])
             })
     #print()
-
+    sorted_data = sort_clusters_by_weight(data)
     #print(os.path.abspath("~"))
     #path = os.path.join(os.path.abspath("~"), "/static/coms_cluster_data.js")
     path = "./static/coms_cluster_data.js"
     with open(path, 'w') as outfile:  
         outfile.write("data=")
-        json.dump(data, outfile)
+        json.dump(sorted_data, outfile)
 
     # if(user_in.upper() == 'A' or user_in.upper() == 'R'):
     #     print("Previous Clusters: ")
