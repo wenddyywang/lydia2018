@@ -1,19 +1,141 @@
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8">
+	<meta charset="utf-8">
 
-  <title>The HTML5 Herald</title>
-  <meta name="description" content="The HTML5 Herald">
-  <meta name="author" content="SitePoint">
+	<title>Verified Clusters</title>
+	<meta name="description" content="verified clusters UI">
+	<meta name="author" content="wendy">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 
-  <link rel="stylesheet" href="css/styles.css?v=1.0">
+	<style type="text/css">
+	#header{
+	    font-size: 2rem;
+	    font-weight: bold;
+	    margin-bottom: 5;
+	}/*
+	.badDoc{
+		color: rgba(254, 27, 7, 0.7);
+		margin-bottom: 20;
+	}*/
+	.clusterData{
+	    border-bottom: 1px solid black;
+	    padding: 10 10;
+	}
+	.clusterTitle{
+	    font-size: 1.5rem;
+	    font-weight: bold;
+	    margin-bottom: 5;
+	}
+	.docBody{
+		overflow-y: scroll;
+		height: 200px;"
+	}
+	.goodDoc{
+		color: black;
+	    margin-bottom: 20;
+	}
+	#header{
+		padding-top: 10;
+	}/*
+	.goodDoc, .badDoc{
+		cursor: pointer;
+	}*/
+	#totalDocCount{
+		font-size: 1.25rem;
+		margin-bottom: 10;
+	}
+	.wordHeader, .docHeader{
+		font-size: 1.25rem;
+	    margin-bottom: 10;
+	}
+	</style>
 
 </head>
 
 <body>
-  <script src="js/scripts.js"></script>
-  <p>
-  	hi
-  </p>
+	<script>
+		$( document ).ready(function() {
+			var d = JSON.parse(JSON.stringify('{{ clusters | tojson | safe}}'));
+			var data = jQuery.parseJSON( d );
+			console.log(data)
+			for(cluster in data){
+				var id = cluster.replace(/\s+/g, '-');
+				var row = "<div class='row clusterData' id='" + id +"'>\
+								<div class='col-md-3'>\
+									<div class='clusterTitle' id='" + id + "Title'>"+ cluster +"\
+									</div>\
+									<div class='wordHeader'>Top Words: \
+									</div>\
+								</div>\
+								<div class='col-md-9'>\
+									<div class='docHeader'>\
+										<div class='docCount'>\
+										</div>\
+									</div>\
+									<div class='docBody'>\
+									</div>\
+								</div>\
+							</div>";
+
+				$('.container').append(row);
+
+				console.log(data[cluster]["top_words"]);
+
+				var wordsList = data[cluster]["top_words"];
+				for(i in wordsList){
+					var w = wordsList[i];
+					console.log(w);
+					word = w.substring(0, w.indexOf(' ')) + "<b>" + w.substring(w.indexOf(' '), w.lastIndexOf(' ')) + "</b>" + w.substring(w.lastIndexOf(' '));
+					$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
+				}
+
+				var sentences = data[cluster]['sentences'];
+				console.log(sentences);
+				var sentenceCount = 0;
+				$('#' + id + ' .docCount').append("<div> Documents in cluster: "+ sentences.length +"</div>");
+				for(i in sentences){
+					var s = sentences[i];
+					var sentence = "\"..." + s.substring(0, s.lastIndexOf('(')-1) + "\" " + s.substring(s.lastIndexOf('('));
+					$('#' + id + ' .docBody').append("<div class='goodDoc' id='" + id + "sentence" + sentenceCount + "'>"+ sentence +"</div>");
+					sentenceCount += 1;
+				}
+
+
+				for(var i = 0; i<data[cluster].length; i++){
+					console.log(data[cluster][i]);
+					for (var p in data[cluster][i]) {
+						console.log(p);
+						if(p === "top_words"){
+							for(w in data[cluster][i][p]){
+								word = w.substring(0, w.indexOf(' ')) + "<b>" + w.substring(w.indexOf(' '), w.lastIndexOf(' ')) + "</b>" + w.substring(w.lastIndexOf(' '));
+								$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
+							}
+						}
+						else if(p === "sentences"){
+							$('#' + id + ' .docCount').append("<div> Documents in cluster: "+ data[cluster][i][p].length +"</div>");
+							for(s in data[cluster][i][p]){
+								sentence += "\"..." + s.substring(0, s.lastIndexOf('(')-1) + "\" " + s.substring(s.lastIndexOf('('));
+								$('#' + id + ' .docBody').append("<div class='goodDoc' id='" + id + "sentence" + sentenceCount + "'>"+ sentence +"</div>");
+								sentenceCount += 1;
+							}
+							
+						}
+						
+					}				
+				}
+			}
+		});
+	</script>
+
+	<div class='container' id = 'pageContainer'>
+		<div class='row' id='header'>
+			<div class='col-md-12'>
+				Verified Clusters
+			</div>
+		</div>
+	</div>
+	
 </body>
+
 </html>

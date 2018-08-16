@@ -266,7 +266,7 @@ def append_mark_tag(sentence, keys, token_dict, highlight_colors):
         stemmed_word = stemmer.stem(word).translate(str.maketrans('','',string.punctuation)).translate(str.maketrans('','', string.digits))
         if stemmed_word in keys:
             i = keys.index(stemmed_word)
-            appended_sent += "<mark style='background-color:#" + highlight_colors[i] + "'> <b>" + word + "</b></mark> "
+            appended_sent += "<mark style='background-color:" + highlight_colors[i] + "'> <b>" + word + "</b></mark> "
         else:
             appended_sent += word + " "
     return appended_sent.strip()
@@ -310,7 +310,7 @@ def run(k=5, n=7, added_stop_word="", removed_stop_word=""):
     true_k = k
     global num_top_words
     num_top_words = n
-    
+
     print(rand_int)
     if not added_stop_word == "":
         print("added " + added_stop_word)
@@ -332,7 +332,8 @@ def run(k=5, n=7, added_stop_word="", removed_stop_word=""):
     previous_clusters = dict()
 
     data = {}
-    highlight_colors = ["E65100", "EF6C00", "F57C00", "FB8C00", "FF9800", "FFA726", "FFB74D", "FFCC80", "FFE0B2", "FFF3E0", "FFF5E5"]
+    opacity = str(.8)
+    highlight_colors = ["rgba(37,101,222,"+opacity+")", "rgba(70,124,227,"+opacity+")", "rgba(76,129,228,"+opacity+")", "rgba(83,133,229,"+opacity+")", "rgba(102,147,232,"+opacity+")", "rgba(109,152,233,"+opacity+")", "rgba(142,175,238,"+opacity+")", "rgba(148,180,239,"+opacity+")", "rgba(155,184,240,"+opacity+")", "rgba(187,207,245,"+opacity+")", "rgba(220,230,250,"+opacity+")"]
 
     # while not user_in.upper() == 'Q':
     matched_sentences = False
@@ -389,7 +390,10 @@ def run(k=5, n=7, added_stop_word="", removed_stop_word=""):
                     if len(val) < len(shortest_word):
                         shortest_word = val
                 original_key += shortest_word + " "
-            original_key = "<mark style='background-color:#" + highlight_colors[len(keys)-1] + "'>" + original_key.strip() + "</mark>"
+            if len(keys)-1 < len(highlight_colors):
+                original_key = "<mark style='background-color:" + highlight_colors[len(keys)-1] + "'>" + original_key.strip() + "</mark>"
+            else:
+                original_key = "<mark style='background-color:rgba(220,230,250,"+opacity+")>" + original_key.strip() + "</mark>"
 
             data['Cluster %d' % i].append({  
                 'word': original_key,

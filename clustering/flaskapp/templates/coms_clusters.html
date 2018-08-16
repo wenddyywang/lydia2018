@@ -15,7 +15,56 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+	<script>
+		function hasTickedBox(checkBoxID) {
+		    var chkbx = document.getElementById( checkBoxID );
+		    var titleId = checkBoxID.substring(0, checkBoxID.indexOf('Chbx')) + 'Title';
+		    if ( chkbx.checked ) {
+		        document.getElementById(titleId).style.color = "#228B22";
+		        document.getElementById(checkBoxID).value = "verified";
+		    }
+		    else{
+		    	document.getElementById(titleId).style.color = "#000000";
+		    	document.getElementById(checkBoxID).value = "notVerified";
+		    }
+
+		}
+
+		function markDocument(sentenceId){
+			var element = document.getElementById(sentenceId);
+    		element.classList.toggle("goodDoc");
+    		element.classList.toggle("badDoc");
+    		var clusterId = sentenceId.substring(0, sentenceId.indexOf("sentence"));
+    		document.getElementById(clusterId + 'VerifyBtn').value = getVerifiedClusterData(clusterId);
+		}
+
+		function getVerifiedClusterData(clusterId){
+			var str = "";
+			var cluster = document.getElementById(clusterId);
+			var rightSide = cluster.getElementsByClassName('col-md-3')[0];
+			var clusterTitle = document.getElementById(clusterId + "Title").innerHTML.trim();
+			var topWords = rightSide.getElementsByClassName('topWord');
+			var docs = cluster.getElementsByClassName('docBody')[0];
+			var goodDocs = docs.getElementsByClassName('goodDoc');
+
+			str += clusterTitle + "\n";
+			for(var i = 0; i < topWords.length; i++){
+				str += topWords[i].textContent.trim() + "\n";
+			}
+
+			for(var i=0; i<goodDocs.length; i++)
+            {
+                str += goodDocs[i].textContent.trim().substring(4, goodDocs[i].textContent.lastIndexOf('\"')) + goodDocs[i].textContent.trim().substring(goodDocs[i].textContent.lastIndexOf('\"') + 1) + "\n";
+            }
+
+            return str.replace(/"/g, "'");
+		}
+	</script>
 	<style>
+	.badDoc{
+		color: rgba(254, 27, 7, 0.7);
+		margin-bottom: 20;
+	}
 	button{
 		margin: 10;
 		float: right;
@@ -33,34 +82,42 @@
 	    font-weight: bold;
 	    margin-bottom: 5;
 	}
+	.docBody{
+		overflow-y: scroll;
+		height: 200px;"
+	}
 	.docCount{
 		float: left;
 		width: 75%;
 	}
+	.goodDoc{
+		color: black;
+	    margin-bottom: 20;
+	}
 	#header{
 		padding-top: 10;
 	}
-	.spaceBelow{
-	    margin-bottom: 20;
-	}
-	.wordHeader, .docHeader{
-		font-size: 1.25rem;
-	    margin-bottom: 10;
-	}
-	#totalDocCount{
-		font-size: 1.25rem;
-		margin-bottom: 10;
-	}
-	.docBody{
-		overflow-y: scroll;
-		height: 200px;"
+	.goodDoc, .badDoc{
+		cursor: pointer;
 	}
 	.summary{
 		float: left;
 		text-align: center;
 	}
-/*	input[name='verifyCheck']{
-		vertical-align: middle;
+	.summary mark{
+		background-color: rgba(37,101,222,0.6) !important;
+	}
+	#totalDocCount{
+		font-size: 1.25rem;
+		margin-bottom: 10;
+	}
+	.wordHeader, .docHeader{
+		font-size: 1.25rem;
+	    margin-bottom: 10;
+	}
+	/*
+	input[type='checkbox']{
+		padding-bottom: : 0.5rem;
 	}*/
 	</style>
 </head>
@@ -73,14 +130,20 @@
 			// console.log(data);
     			for(d in data){
     				if(d === "Document count"){
-    					var c = {{ count }}
-    					console.log(c)
+    					var c = '{{ count }}'
     					var row = "<div class='row' id='header'> \
-    									<div class='col-md-12'> \
+    									<div class='col-md-6'> \
     										<div id='totalDocCount'> \
     											Total Document Count: " + data[d] + "\
     										</div> \
     									</div> \
+    									<div class='col-md-6'> \
+    										<form action='{{ url_for('verified') }}' method='post' target='_blank'>\
+	    										<button name='verifiedBtn' type='submit' value='seeVerified'> \
+	    											See Verified Clusters \
+	    										</button> \
+    										</form>\
+    									</div>\
     								</div> \
     								<div class='row'> \
     									<div class='col-md-12'> \
@@ -117,7 +180,7 @@
     					for(d in data){
     						if(d !== "Document count"){
     							var id = d.replace(/\s+/g, '-');
-    							$("#clusterSummaries").append("<div class='summary'><a href='#" + id + "'>" + d + "</a><br>" + data[d][0]["word"] + " (" + data[d][0]["word_weight"] + ")" + "</div>");
+    							$("#clusterSummaries").append("<div class='summary'><a href='#" + id + "'>" + d + "</a><br><b>" + data[d][0]["word"] + "</b> (" + data[d][0]["word_weight"] + ")" + "</div>");
     							numClusters = numClusters + 1;
     						}
     					}
@@ -126,9 +189,10 @@
     				}
     				else{
 	    				var id = d.replace(/\s+/g, '-');
+						// var element = document.getElementById('totalDocCount').outerHTML;
 	    				var row = "<div class='row clusterData' id='" + id +"'>\
 	    								<div class='col-md-3'>\
-	    									<div class='clusterTitle'>"+ d +"\
+	    									<div class='clusterTitle' id='" + id + "Title'>"+ d +"\
 	    									</div>\
 	    									<div class='wordHeader'>Top Words: \
 	    									</div>\
@@ -138,8 +202,11 @@
 	    										<div class='docCount'>\
 	    										</div>\
 	    										<div class='verifyCheckBox'>\
-			    									<form action='' method='post' name='verifiedCluster'>\
-			    										<input type='checkbox' name='verifyCheck' value='verified'> Mark Valid\
+			    									<form action='{{ url_for('verified') }}' method='post' class='verifyForm' target='_blank'>\
+				    									<input type='checkbox' name='verifyCheck' id='" + id + "Chbx' value='notVerified' onclick='hasTickedBox(this.id)'> Mark Valid\
+				    									<button name='verifyBtn' id ='" + id + "VerifyBtn' type='submit'> \
+    														Verify \
+    													</button> \
 			    									</form>\
 	    										</div>\
 	    									</div>\
@@ -150,9 +217,11 @@
 						// console.log(id);
 						// console.log(data[d][0]);
 						$(".container").append(row);
+						// var chbxId = "'" + id + "Chbx'";
+
 						var word = "";
 						var sentence = "";
-						var letter = 65;
+						var sentenceCount = 0;
 						for(var i = 0; i<data[d].length; i++){
 							for (var p in data[d][i]) {
 								if(p === "word"){
@@ -160,16 +229,16 @@
 								}
 								else if(p === "word_weight"){
 									word += "(" + data[d][i][p] + ")<br>";
-									$('#' + id + ' .col-md-3').append("<div>"+ word +"</div>");
+									$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
 									word = "";
 								}
 								else if(p === "sentence"){
 									sentence += "\"..." + data[d][i][p] + "\" ";
-									letter = letter + 1;
 								}
 								else if(p === "sent_weight"){
 									sentence += "(" + data[d][i][p] + ")<br>";
-									$('#' + id + ' .docBody').append("<div class='spaceBelow'>"+ sentence +"</div>");
+									$('#' + id + ' .docBody').append("<div class='goodDoc' id='" + id + "sentence" + sentenceCount + "' onclick='markDocument(this.id)'>"+ sentence +"</div>");
+									sentenceCount += 1;
 									sentence = "";
 								}
 								else if(p === "doc_count"){
@@ -177,11 +246,13 @@
 								}
 								
 							}				
-						}    					
+						}
+    					document.getElementById(id + 'VerifyBtn').value = getVerifiedClusterData(id);
     				}
 
 
 				}
+
 		})
 		
 	</script>
