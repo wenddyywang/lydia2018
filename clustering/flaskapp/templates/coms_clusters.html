@@ -16,16 +16,19 @@
 	<meta http-equiv="Expires" content="0" />
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 	<script>
-		function hasTickedBox(checkBoxID) {
-		    var chkbx = document.getElementById( checkBoxID );
-		    var titleId = checkBoxID.substring(0, checkBoxID.indexOf('Chbx')) + 'Title';
-		    if ( chkbx.checked ) {
+		function markValid(boxId) {
+		    var box = document.getElementById( boxId );
+		    var clusterId = boxId.substring(0, boxId.indexOf('VerifyBox'));
+		    console.log(clusterId);
+		    var titleId = clusterId + 'Title';
+		    if ( box.checked ) {
 		        document.getElementById(titleId).style.color = "#228B22";
-		        document.getElementById(checkBoxID).value = "verified";
+		        $('#form').append("<input type='hidden' id=\"" + clusterId + "data\" name=\"" + clusterId + "\" value=\"" + document.getElementById(clusterId+'VerifyBox').value + "\">")
+
 		    }
 		    else{
 		    	document.getElementById(titleId).style.color = "#000000";
-		    	document.getElementById(checkBoxID).value = "notVerified";
+		    	$('#' + clusterId + 'data').remove()
 		    }
 
 		}
@@ -111,6 +114,9 @@
 		font-size: 1.25rem;
 		margin-bottom: 10;
 	}
+/*	.verify{
+		float: right;
+	}*/
 	.wordHeader, .docHeader{
 		font-size: 1.25rem;
 	    margin-bottom: 10;
@@ -138,8 +144,8 @@
     										</div> \
     									</div> \
     									<div class='col-md-6'> \
-    										<form action='{{ url_for('verified') }}' method='post' target='_blank'>\
-	    										<button name='verifiedBtn' type='submit' value='seeVerified'> \
+    										<form action='{{ url_for('verified') }}' method='post' id='form' target='_blank'>\
+	    										<button name='verifyBtn' id='verifyBtn' type='submit'> \
 	    											See Verified Clusters \
 	    										</button> \
     										</form>\
@@ -201,12 +207,9 @@
 	    									<div class='docHeader'>\
 	    										<div class='docCount'>\
 	    										</div>\
-	    										<div class='verifyCheckBox'>\
-			    									<form action='{{ url_for('verified') }}' method='post' class='verifyForm' target='_blank'>\
-				    									<input type='checkbox' name='verifyCheck' id='" + id + "Chbx' value='notVerified' onclick='hasTickedBox(this.id)'> Mark Valid\
-				    									<button name='verifyBtn' id ='" + id + "VerifyBtn' type='submit'> \
-    														Verify \
-    													</button> \
+	    										<div class='verify'>\
+			    									<form action='{{ url_for('verified') }}' method='post' class='verifyForm'>\
+			    										<input type='checkbox' id ='" + id + "VerifyBox' onclick='markValid(this.id)'> Mark Valid\
 			    									</form>\
 	    										</div>\
 	    									</div>\
@@ -247,11 +250,12 @@
 								
 							}				
 						}
-    					document.getElementById(id + 'VerifyBtn').value = getVerifiedClusterData(id);
+    					document.getElementById(id + 'VerifyBox').value = getVerifiedClusterData(id);
     				}
 
 
 				}
+
 
 		})
 		

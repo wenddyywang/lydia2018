@@ -1,13 +1,15 @@
 from flask import Flask, render_template, request
 import json_coms_categorizer
 import json
+from flask_wtf import FlaskForm
+from wtforms import StringField
+
 
 app = Flask(__name__)
 stop_words_list = set()
 true_k = json_coms_categorizer.true_k
 n_top_words = json_coms_categorizer.num_top_words
 counter = 0
-verified_clusters = dict()
 
 @app.route('/')
 def index():
@@ -60,26 +62,47 @@ def recluster(counter):
 @app.route('/verified', methods=['POST'])
 def verified():
 	print("verified:")
+	verified_clusters = dict()
 	inputs = dict(request.form)
-	input_str = inputs['verifyBtn'][0]
-	input_arr = input_str.splitlines()
+	if len(inputs) > 1:
+		inputs.pop('verifyBtn', None)
+		for key, value in inputs.items():
+			data_str = value[0]
+			data_arr = data_str.splitlines()
 
-	cluster_data = dict()
+			cluster_data = dict()
 
-	top_words = list()
-	for i in range(1, n_top_words + 1):
-		top_words.append(input_arr[i])
-	cluster_data['top_words'] = top_words
+			top_words = list()
+			for i in range(1, n_top_words + 1):
+				top_words.append(data_arr[i])
+			cluster_data['top_words'] = top_words
 
-	sentences = list()
-	for i in range(n_top_words + 1, len(input_arr)):
-		sentences.append(input_arr[i])
-	cluster_data['sentences'] = sentences
+			sentences = list()
+			for i in range(n_top_words + 1, len(data_arr)):
+				sentences.append(data_arr[i])
+			cluster_data['sentences'] = sentences
 
-	verified_clusters[input_arr[0]] = cluster_data
-	print(str(verified_clusters))
+			verified_clusters[data_arr[0]] = cluster_data
+			print(data_arr[0])
 
-	js_data = json.dumps(verified_clusters)
+		# input_str = inputs['verifyBtn'][0]
+		# print(input_str)
+		# input_arr = input_str.splitlines()
+
+		# cluster_data = dict()
+
+		# top_words = list()
+		# for i in range(1, n_top_words + 1):
+		# 	top_words.append(input_arr[i])
+		# cluster_data['top_words'] = top_words
+
+		# sentences = list()
+		# for i in range(n_top_words + 1, len(input_arr)):
+		# 	sentences.append(input_arr[i])
+		# cluster_data['sentences'] = sentences
+
+		# verified_clusters[input_arr[0]] = cluster_data
+		# return render_template('coms_clusters.html', count=counter)
 
 	return render_template('verified_clusters.html', clusters=verified_clusters)
 
