@@ -46,11 +46,24 @@ def recluster(counter):
 		print("new n: " + str(n_top_words))
 
 	print("list: " + str(stop_words_list))
-	print(request.form['reclusterBtn'])
-	if request.form['reclusterBtn'] == 'recalcDiffSeed':
+	if 'reclusterBtn' in request.form:
+		if request.form['reclusterBtn'] == 'recalcDiffSeed':
+			json_coms_categorizer.new_seed()
+			print("RESEEDEDEDED")
+		json_coms_categorizer.run(k=true_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+	elif 'reclusterBadBtn' in request.form:
 		json_coms_categorizer.new_seed()
-		print("RESEEDEDEDED")
-	json_coms_categorizer.run(k=true_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+		print("CLUSTERING BAD DOCS")
+		doc_str = request.form['reclusterBadBtn']
+		docs = list(doc_str.splitlines())
+		print(docs)
+		temp_k = true_k
+		while len(docs) <= temp_k*2:
+			temp_k -= 1
+			if temp_k == 0:
+				return render_template('coms_clusters.html', alert='Too few documents to cluster.', count=counter)
+		json_coms_categorizer.run(doc_source=docs, k=temp_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+
 	return render_template('coms_clusters.html', stop_words=stop_words_list, count=counter)
 
 # @app.route('/verified', methods=['POST'])

@@ -299,19 +299,19 @@ stop_words = read_stop_words("stopwords.csv")
 rand_int = random.randint(0, 1000)
 true_k = 5
 num_top_words = 7
+# doc_source = "COMS4170Insight.txt"
 
 def new_seed():
     global rand_int
     rand_int = random.randint(0, 1000)
     print("new seed: " + str(rand_int))
 
-def run(k=5, n=7, added_stop_word="", removed_stop_word=""):
+def run(doc_source='COMS4170Insight.txt', k=5, n=7, added_stop_word="", removed_stop_word=""):
     global true_k
     true_k = k
     global num_top_words
     num_top_words = n
 
-    print(rand_int)
     if not added_stop_word == "":
         print("added " + added_stop_word)
         add_stop_word(added_stop_word)
@@ -319,11 +319,17 @@ def run(k=5, n=7, added_stop_word="", removed_stop_word=""):
         print("removed " + removed_stop_word)
         remove_stop_word(removed_stop_word)
 
-    raw_docs = read_documents("COMS4170Insight.txt")
-
-    documents = process_documents(raw_docs)
-
-    original_docs = read_documents("COMS4170Insight.txt")
+    if isinstance(doc_source, str):
+        print("ITS A STRING")
+        raw_docs = read_documents(doc_source)
+        documents = process_documents(raw_docs)
+        original_docs = read_documents(doc_source)
+    else:
+        print('i am not stupid')
+        raw_docs = doc_source
+        documents = process_documents(raw_docs)
+        original_docs = doc_source
+        print(str(original_docs))
 
     doc_dict = dict(zip(documents, original_docs))
     token_dict = get_token_dict(raw_docs)
