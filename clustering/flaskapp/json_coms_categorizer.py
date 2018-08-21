@@ -219,9 +219,9 @@ def match_all_sentences_to_cluster(k, clusters, sentences, sorted_terms, num_sen
         # print("---------\n")
         doc_subframe = frame.ix[i]['documents']
         if len(frame.ix[i]) <= 2:
-            # print(frame.ix[i]['documents'])
+            doc_subframe = pd.Series(doc_subframe)
             #doc_subframe = pd.Series(frame.ix[i]['documents'])
-            return False
+            #return False
         for document in doc_subframe.values.tolist():
             sentences = document.split(". ")
             document_word_scores = dict() #a dict mapping word to freq and weight {"word": [frequency, weight]}
@@ -255,7 +255,6 @@ def match_all_sentences_to_cluster(k, clusters, sentences, sorted_terms, num_sen
         for n in range(num_sentences_per_cluster[i]):
             if n<len(sorted_documents): 
                 matched_sentences[i].append(sorted_documents[n])
-
     return matched_sentences
 
 
@@ -266,10 +265,13 @@ def append_mark_tag(sentence, keys, token_dict, highlight_colors):
         stemmed_word = stemmer.stem(word).translate(str.maketrans('','',string.punctuation)).translate(str.maketrans('','', string.digits))
         if stemmed_word in keys:
             i = keys.index(stemmed_word)
-            appended_sent += "<mark style='background-color:" + highlight_colors[i] + "'> <b>" + word + "</b></mark> "
+            if i < len(highlight_colors):
+                appended_sent += '<mark style=\"background-color:' + highlight_colors[i] + '\"> <b>' + word + '</b></mark> '
+            else:
+                appended_sent += '<mark style=\"background-color:rgba(220,230,250,'+opacity+')\"> <b>' + word + '</b></mark> '
         else:
-            appended_sent += word + " "
-    return appended_sent.strip()
+            appended_sent += word + ' ' 
+    return appended_sent.replace("\"", "'").strip()
 
 def sort_clusters_by_weight(data):
     sorted_data = {}
@@ -299,6 +301,7 @@ stop_words = read_stop_words("stopwords.csv")
 rand_int = random.randint(0, 1000)
 true_k = 5
 num_top_words = 7
+opacity = str(.8)
 # doc_source = "COMS4170Insight.txt"
 
 def new_seed():
@@ -338,13 +341,15 @@ def run(doc_source='COMS4170Insight.txt', k=5, n=7, added_stop_word="", removed_
     previous_clusters = dict()
 
     data = {}
-    opacity = str(.8)
     highlight_colors = ["rgba(37,101,222,"+opacity+")", "rgba(70,124,227,"+opacity+")", "rgba(76,129,228,"+opacity+")", "rgba(83,133,229,"+opacity+")", "rgba(102,147,232,"+opacity+")", "rgba(109,152,233,"+opacity+")", "rgba(142,175,238,"+opacity+")", "rgba(148,180,239,"+opacity+")", "rgba(155,184,240,"+opacity+")", "rgba(187,207,245,"+opacity+")", "rgba(220,230,250,"+opacity+")"]
 
     # while not user_in.upper() == 'Q':
     matched_sentences = False
     while not matched_sentences:
-        vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=(1,3), min_df=2)
+        if isinstance(doc_source, str):
+            vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=(1,3), min_df=2)
+        else:
+            vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=(1,3))
         X = vectorizer.fit_transform(documents)
         # true_k = 5
         model = KMeans(n_clusters=true_k, init='k-means++', max_iter=1000, n_init=1, random_state=rand_int)
@@ -427,10 +432,12 @@ def run(doc_source='COMS4170Insight.txt', k=5, n=7, added_stop_word="", removed_
     sorted_data = sort_clusters_by_weight(data)
     #print(os.path.abspath("~"))
     #path = os.path.join(os.path.abspath("~"), "/static/coms_cluster_data.js")
-    path = "./static/coms_cluster_data.js"
-    with open(path, 'w') as outfile:  
-        outfile.write("data=")
-        json.dump(sorted_data, outfile)
+    # path = "./templates/coms_cluster_data.js"
+    # with open(path, 'w') as outfile:  
+    #     outfile.write("data=")
+    #     json.dump(sorted_data, outfile)
+
+    return sorted_data
 
     # if(user_in.upper() == 'A' or user_in.upper() == 'R'):
     #     print("Previous Clusters: ")

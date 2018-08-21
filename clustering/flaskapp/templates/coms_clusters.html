@@ -75,15 +75,20 @@
 			var badData = "";
 			$(".docBody div:visible").each(function() { 
 			    console.log($(this).attr('id')); 
-			    badData += this.textContent.trim().substring(4, this.textContent.lastIndexOf('\"')) + this.textContent.trim().substring(this.textContent.lastIndexOf('\"') + 1) + "\n";
+			    badData += this.textContent.trim().substring(4, this.textContent.lastIndexOf('" (')) + "\n";
 			});
 
-
 			document.getElementById(btnId).value = badData;
-
 		}
 	</script>
 	<style>
+	#backCover{
+		position: fixed;
+		background: rgba(255,255,255, 1);
+		width: 100%;
+		z-index: 500;
+		left: 0px;
+	}
 	.badDoc{
 		color: rgba(254, 27, 7, 0.7);
 		margin-bottom: 20;
@@ -117,11 +122,14 @@
 		color: black;
 	    margin-bottom: 20;
 	}
-	#header{
-		padding-top: 10;
-	}
 	.goodDoc, .badDoc{
 		cursor: pointer;
+	}
+	#header{
+		position: fixed;
+		display: block;
+		background: rgba(255,255,255, 1);
+		z-index: 999;
 	}
 	.summary{
 		float: left;
@@ -129,6 +137,9 @@
 	}
 	.summary mark{
 		background-color: rgba(37,101,222,0.6) !important;
+	}
+	#topRow{
+		padding-top: 10;
 	}
 	#totalDocCount{
 		font-size: 1.25rem;
@@ -150,108 +161,121 @@
 
 <body>
 	<!-- <script src="coms_cluster_data.js"></script> -->
-	<script src="{{url_for('static', filename='coms_cluster_data.js')}}"></script> 
+	<!-- <script src='coms_cluster_data.js'></script>  -->
 	<script>
 		$(document).ready(function(){
-			var warning = '{{ alert }}'
+			var d = JSON.parse(JSON.stringify('{{ clusters | tojson }}'));
+			var data = jQuery.parseJSON( d );
+
+			var warning = '{{ alert }}';
 			if(warning){
 				alert(warning);
 			}
-			// console.log(data);
+
+			var c = '{{ count }}'
+			var row = "<div id='header'> \
+						<div class='row' id='topRow'> \
+							<div class='col-md-6'> \
+								<div id='totalDocCount'> \
+								</div> \
+							</div> \
+							<div class='col-md-6'> \
+								<form action='{{ url_for('verified') }}' method='post' id='form' target='_blank'>\
+									<button name='verifyBtn' id='verifyBtn' type='submit'> \
+										See Verified Clusters \
+									</button> \
+								</form>\
+							</div>\
+						</div> \
+						<div class='row'> \
+							<div class='col-md-12'> \
+								<form action='{{ url_for('recluster', counter=count) }}' method='post' id='form' name='stopwordInput'>\
+									Add Stop Word: \
+									<input type='text' name='addStopword'> \
+									Remove Stop Word: \
+									<input type='text' name='removeStopword'> \
+									K: \
+									<input type='text' name='k'> \
+									N Top Words: \
+									<input type='text' name='nTopWords'> \
+									<br> \
+									<button name='reclusterBadBtn' id='reclusterBadBtn' type='submit' onclick='aggregateBadDocs(this.id)'' value=''> \
+										Recalculate Invalid Documents \
+									</button> \
+									<button name='reclusterBtn' type='submit' value='recalcDiffSeed'> \
+										Recalculate with New Seed \
+									</button> \
+									<button name='reclusterBtn' type='submit' value='recalcSameSeed'> \
+										Recalculate \
+									</button> \
+								</form>\
+								<br> \
+							</div> \
+						</div> \
+						<div class='row'> \
+							<div class='col-md-12' id='clusterSummaries'> \
+								<div> \
+									Overview: \
+								</div> \
+							</div> \
+						</div> \
+						</div> \
+						<div id='backCover'> \
+						</div> \
+						<div id='filler'> \
+						</div>";
+			$(".container").append(row);
+			// Append 'summaries' of clusters to header
+			// var numClusters = 0;
+			// for(d in data){
+			// 	var id = d.replace(/\s+/g, '-');
+			// 	$("#clusterSummaries").append("<div class='summary'><a href='#" + id + "'>" + d + "</a><br><b>" + data[d][0]["word"] + "</b> <div id='" + id + "summaryDocCount'></div>" + "</div>");
+			// 	numClusters = numClusters + 1;
+			// }
+			// var screenPercent = 100/numClusters + "%";
+			// $('.summary').css('width', screenPercent);
+
+			console.log(data);
+			var numClusters = 0;
 			for(d in data){
 				if(d === "Document count"){
-					var c = '{{ count }}'
-					var row = "<div class='row' id='header'> \
-									<div class='col-md-6'> \
-										<div id='totalDocCount'> \
-											Total Document Count: " + data[d] + "\
-										</div> \
-									</div> \
-									<div class='col-md-6'> \
-										<form action='{{ url_for('verified') }}' method='post' id='form' target='_blank'>\
-    										<button name='verifyBtn' id='verifyBtn' type='submit'> \
-    											See Verified Clusters \
-    										</button> \
-										</form>\
-									</div>\
-								</div> \
-								<div class='row'> \
-									<div class='col-md-12'> \
-										<form action='{{ url_for('recluster', counter=count) }}' method='post' id='form' name='stopwordInput'>\
-											Add Stop Word: \
-											<input type='text' name='addStopword'> \
-											Remove Stop Word: \
-											<input type='text' name='removeStopword'> \
-											K: \
-											<input type='text' name='k'> \
-											N Top Words: \
-											<input type='text' name='nTopWords'> \
-											<br> \
-											<button name='reclusterBadBtn' id='reclusterBadBtn' type='submit' onclick='aggregateBadDocs(this.id)'' value=''> \
-												Recalculate Invalid Documents \
-											</button> \
-											<button name='reclusterBtn' type='submit' value='recalcDiffSeed'> \
-												Recalculate with New Seed \
-											</button> \
-											<button name='reclusterBtn' type='submit' value='recalcSameSeed'> \
-												Recalculate \
-											</button> \
-										</form>\
-										<br> \
-									</div> \
-								</div> \
-								<div class='row'> \
-									<div class='col-md-12' id='clusterSummaries'> \
-    									<div> \
-    										Overview: \
-    									</div> \
-									</div> \
-								</div>";
-					$(".container").append(row);
-					// Append 'summaries' of clusters to header
-					var numClusters = 0;
-					for(d in data){
-						if(d !== "Document count"){
-							var id = d.replace(/\s+/g, '-');
-							$("#clusterSummaries").append("<div class='summary'><a href='#" + id + "'>" + d + "</a><br><b>" + data[d][0]["word"] + "</b> (" + data[d][0]["word_weight"] + ")" + "</div>");
-							numClusters = numClusters + 1;
-						}
-					}
-					var screenPercent = 100/numClusters + "%";
-					$('.summary').css('width', screenPercent);
+					$('#totalDocCount').append('Total Document Count: ' + data[d]);
 				}
 				else{
-    				var id = d.replace(/\s+/g, '-');
+					var id = d.replace(/\s+/g, '-');
+					$("#clusterSummaries").append("<div class='summary'><a href='#" + id + "'>" + d + "</a><br><b>" + data[d][0]["word"] + "</b> <div id='" + id + "summaryDocCount'></div>" + "</div>");
+					numClusters = numClusters + 1;
 					// var element = document.getElementById('totalDocCount').outerHTML;
-    				var row = "<div class='row clusterData' id='" + id +"'>\
-    								<div class='col-md-3'>\
-    									<div class='clusterTitle' id='" + id + "Title'>"+ d +"\
-    									</div>\
-    									<div class='wordHeader'>Top Words: \
-    									</div>\
-    								</div>\
-    								<div class='col-md-9'>\
-    									<div class='docHeader'>\
-    										<div class='docCount'>\
-    										</div>\
-    										<div class='verify'>\
+					var row = "<div class='row clusterData' id='" + id +"'>\
+									<div class='col-md-3'>\
+										<div class='clusterTitle' id='" + id + "Title'>"+ d +"\
+										</div>\
+										<div class='wordHeader'>Top Words: \
+										</div>\
+									</div>\
+									<div class='col-md-9'>\
+										<div class='docHeader'>\
+											<div class='docCount'>\
+											</div>\
+											<div class='verify'>\
 		    									<form action='{{ url_for('verified') }}' method='post' class='verifyForm'>\
 		    										<input type='checkbox' id ='" + id + "VerifyBox' onclick='markValid(this.id)'> Verify\
 		    									</form>\
-    										</div>\
-    									</div>\
-    									<div class='docBody'>\
-    									</div>\
-    								</div>\
-    							</div>";
+											</div>\
+										</div>\
+										<div class='docBody'>\
+										</div>\
+									</div>\
+								</div>";
 					// console.log(id);
 					// console.log(data[d][0]);
 					$(".container").append(row);
 					// var chbxId = "'" + id + "Chbx'";
-
+					console.log(data[d][0]['word'])
 					var word = "";
-					var sentence = "";
+					// var sentence = "";
 					var sentenceCount = 0;
+					var sentenceWeight = "";
 					for(var i = 0; i<data[d].length; i++){
 						for (var p in data[d][i]) {
 							if(p === "word"){
@@ -263,16 +287,17 @@
 								word = "";
 							}
 							else if(p === "sentence"){
-								sentence += "\"..." + data[d][i][p] + "\" ";
-							}
-							else if(p === "sent_weight"){
-								sentence += "(" + data[d][i][p] + ")<br>";
+								var sentence = "\"..." + data[d][i][p] + "\" " + sentenceWeight;
 								$('#' + id + ' .docBody').append("<div class='goodDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "' onclick='markDocument(this.id)'>"+ sentence +"</div>");
 								sentenceCount += 1;
-								sentence = "";
+								sentenceWeight = "";
+							}
+							else if(p === "sent_weight"){
+								sentenceWeight = "(" + data[d][i][p] + ")<br>";
 							}
 							else if(p === "doc_count"){
 								$('#' + id + ' .docCount').append("<div> Documents in cluster: "+ data[d][i][p] +"</div>");
+								$('#' + id + 'summaryDocCount').append(data[d][i][p] + " docs")
 							}
 							
 						}				
@@ -281,7 +306,14 @@
 				}
 
 
-			}
+
+			} // endfor
+			var screenPercent = 100/numClusters + "%";
+			$('.summary').css('width', screenPercent);
+
+			$("#filler").height($("#header").height());
+			$("#backCover").height($("#header").height());
+			$("#backCover").width($("#container").outerWidth());
 
 
 		})
