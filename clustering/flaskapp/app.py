@@ -15,6 +15,7 @@ counter = 0
 def index():
 	stop_words_list = set()
 	clusters = json_coms_categorizer.run()
+	print(clusters)
 	return render_template('coms_clusters.html', clusters=clusters, count=counter)
 
 @app.route('/recluster/<int:counter>', methods=['POST'])

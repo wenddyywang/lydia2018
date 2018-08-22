@@ -15,6 +15,7 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<script>
 		function markValid(boxId) {
 		    var box = document.getElementById( boxId );
@@ -60,12 +61,14 @@
 
 			str += clusterTitle + "\n";
 			for(var i = 0; i < topWords.length; i++){
-				str += topWords[i].textContent.trim() + "\n";
+				str += topWords[i].innerHTML.trim() + "\n";
 			}
 
 			for(var i=0; i<goodDocs.length; i++)
             {
                 str += goodDocs[i].textContent.trim().substring(4, goodDocs[i].textContent.lastIndexOf('\"')) + goodDocs[i].textContent.trim().substring(goodDocs[i].textContent.lastIndexOf('\"') + 1) + "\n";
+
+                // str += goodDocs[i].innerHTML.substring(goodDocs[i].innerHTML.indexOf('>')+1).substring(goodDocs[i].innerHTML.indexOf("'")+1) + "\n";
             }
 
             return str.replace(/"/g, "'");
@@ -79,6 +82,10 @@
 			});
 
 			document.getElementById(btnId).value = badData;
+		}
+
+		function showHowTo(){
+			alert("Click on individual sentences in each cluster to mark them as irrelevant. After pruning, mark cluster as valid with the 'Verify' checkbox. \n\nClick 'See Verified Clusters' button to go to page of valid clusters. \n\n'Recalculate Invalid Documents' to run k-means algorithm on the leftover off-topic sentences");
 		}
 	</script>
 	<style>
@@ -118,12 +125,18 @@
 		float: left;
 		width: 75%;
 	}
+	.fa-question-circle {
+		cursor: pointer;
+	}
 	.goodDoc{
 		color: black;
 	    margin-bottom: 20;
 	}
 	.goodDoc, .badDoc{
 		cursor: pointer;
+	}
+	h3{
+		display: inline-block;
 	}
 	#header{
 		position: fixed;
@@ -177,6 +190,8 @@
 						<div class='row' id='topRow'> \
 							<div class='col-md-6'> \
 								<div id='totalDocCount'> \
+									<h3> K-Means Text Clustering </h3> \
+									<i class='fa fa-question-circle' onclick='showHowTo()'></i> <br>\
 								</div> \
 							</div> \
 							<div class='col-md-6'> \
@@ -210,6 +225,10 @@
 									</button> \
 								</form>\
 								<br> \
+							</div> \
+						</div> \
+						<div class='row'> \
+							<div class='col-md-12' id='stopWordsRow'> \
 							</div> \
 						</div> \
 						<div class='row'> \
@@ -288,7 +307,7 @@
 							}
 							else if(p === "sentence"){
 								var sentence = "\"..." + data[d][i][p] + "\" " + sentenceWeight;
-								$('#' + id + ' .docBody').append("<div class='goodDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "' onclick='markDocument(this.id)'>"+ sentence +"</div>");
+								$('#' + id + ' .docBody').append("<div class='goodDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "' onclick='markDocument(this.id)'> <input type='checkbox' id ='" + id + "sentence" + sentenceCount +"VerifyBox'>\t"+ sentence +"</div>");
 								sentenceCount += 1;
 								sentenceWeight = "";
 							}
@@ -311,7 +330,15 @@
 			var screenPercent = 100/numClusters + "%";
 			$('.summary').css('width', screenPercent);
 
-			$("#filler").height($("#header").height());
+			var stopWords = '{{stop_words}}'.replace(/&#39;/g, "").replace(/{/g, "").replace(/}/g, "");
+			// stopWords.forEach(function(value) {
+			// 	console.log(value);
+			// });
+			if(stopWords !== 'set()'){
+				$('#stopWordsRow').append(stopWords);
+			}
+
+			$("#filler").height($("#header").outerHeight());
 			$("#backCover").height($("#header").height());
 			$("#backCover").width($("#container").outerWidth());
 
