@@ -56,7 +56,7 @@
 <body>
 	<script>
 		$( document ).ready(function() {
-			console.log('{{ clusters }}')
+			console.log('{{ clusters | tojson}}');
 			var d = JSON.parse(JSON.stringify('{{ clusters | tojson | safe}}'));
 			var data = jQuery.parseJSON( d );
 			console.log(data)
