@@ -9,21 +9,18 @@ app = Flask(__name__)
 stop_words_list = set()
 true_k = json_coms_categorizer.true_k
 n_top_words = json_coms_categorizer.num_top_words
-counter = 0
 
 @app.route('/')
 def index():
 	stop_words_list = set()
 	clusters = json_coms_categorizer.run()
-	print(clusters)
-	return render_template('coms_clusters.html', clusters=clusters, count=counter)
+	return render_template('coms_clusters.html', clusters=clusters)
 
-@app.route('/recluster/<int:counter>', methods=['POST'])
-def recluster(counter):
+@app.route('/recluster', methods=['POST'])
+def recluster():
 	global true_k
 	global n_top_words
 
-	counter += 1
 	inputs = dict(request.form)
 
 	addStopwordInput = inputs['addStopword'][0]
@@ -59,16 +56,79 @@ def recluster(counter):
 		while len(docs) <= temp_k*3:
 			temp_k -= 1
 			if temp_k == 0:
-				return render_template('coms_clusters.html', alert='Too few documents to cluster.', count=counter)
+				return render_template('coms_clusters.html', alert='Too few documents to cluster.')
 		clusters = json_coms_categorizer.run(doc_source=docs, k=temp_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
 
-	return render_template('coms_clusters.html', clusters=clusters, stop_words=stop_words_list, count=counter)
+	return render_template('coms_clusters.html', clusters=clusters, stop_words=stop_words_list)
 
-# @app.route('/verified', methods=['POST'])
-# def verified():
-# 	print(request.form.getlist('verifyCheck'))
-# 	print("verified")
-# 	return render_template('verified_clusters.html')
+@app.route('/recluster_valid', methods=['POST'])
+def recluster_valid():
+	global true_k
+	global n_top_words
+
+	inputs = dict(request.form)
+	v_n_top_words = n_top_words
+	docs = inputs['docs']
+	v_k = int(inputs['numClusters'][0])
+
+	addStopwordInput = inputs['addStopword'][0]
+	if not addStopwordInput == "":
+		print("added stop word: " + addStopwordInput)
+		stop_words_list.add(addStopwordInput)
+
+	removeStopwordInput = inputs['removeStopword'][0]
+	if not removeStopwordInput == "" and removeStopwordInput in stop_words_list:
+		print("removed stop word: " + removeStopwordInput)
+		stop_words_list.remove(removeStopwordInput)
+
+	if not inputs['k'][0] == "":
+		k_input = int(inputs['k'][0])
+		v_k = k_input
+		print("new k: " + str(true_k))
+
+	if not inputs['nTopWords'][0] == "":
+		n_top_words_input = int(inputs['nTopWords'][0])
+		v_n_top_words = n_top_words_input
+		print("new n: " + str(v_n_top_words))
+
+	print("list: " + str(stop_words_list))
+
+	if 'reclusterBtn' in request.form:
+		if request.form['reclusterBtn'] == 'recalcDiffSeed':
+			json_coms_categorizer.new_seed()
+		clusters = json_coms_categorizer.run(doc_source=docs, k=v_k, n=v_n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+
+		recalculated_clusters = dict();
+
+		clusters.pop('Document count', None)
+		for cluster in clusters:
+			cluster_dict = clusters[cluster]
+			word_counter = 1
+			words_list = list()
+			sentence_list = list()
+			for d in cluster_dict:
+				one_word = ""
+				one_sentence = ""
+				for key, val in d.items():
+					if key == 'word':
+						one_word += str(word_counter) + ". <b>" + val + "</b> "
+						word_counter += 1
+					elif key == 'word_weight':
+						one_word += "(" + val + ") <br>"
+						words_list.append(one_word)
+						one_word = ""
+					elif key == 'sentence':
+						one_sentence += val
+					elif key == 'sent_weight':
+						one_sentence += " (" + val + ')'
+						sentence_list.append(one_sentence)
+						one_sentence = ""
+			sub_dict = dict()
+			sub_dict['top_words'] = words_list
+			sub_dict['sentences'] = sentence_list
+			recalculated_clusters[cluster] = sub_dict
+
+	return render_template('verified_clusters.html', clusters=recalculated_clusters, stop_words=stop_words_list)
 
 @app.route('/verified', methods=['POST'])
 def verified():
@@ -113,6 +173,7 @@ def verified():
 		# verified_clusters[input_arr[0]] = cluster_data
 		# return render_template('coms_clusters.html', count=counter)
 
+	print(verified_clusters)
 	return render_template('verified_clusters.html', clusters=verified_clusters)
 
 if __name__ == '__main__':

@@ -219,6 +219,11 @@ def match_all_sentences_to_cluster(k, clusters, sentences, sorted_terms, num_sen
         # print("---------\n")
         doc_subframe = frame.ix[i]['documents']
         if len(frame.ix[i]) <= 2:
+            total_sentences = 0
+            for key, value in num_sentences_per_cluster.items():
+                total_sentences += value
+            if total_sentences > k*5:
+                return False
             doc_subframe = pd.Series(doc_subframe)
             #doc_subframe = pd.Series(frame.ix[i]['documents'])
             #return False
@@ -332,7 +337,6 @@ def run(doc_source='COMS4170Insight.txt', k=5, n=7, added_stop_word="", removed_
         raw_docs = doc_source
         documents = process_documents(raw_docs)
         original_docs = doc_source
-        print(str(original_docs))
 
     doc_dict = dict(zip(documents, original_docs))
     token_dict = get_token_dict(raw_docs)

@@ -7,20 +7,75 @@
 	<meta name="author" content="wendy">
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+	<script>
+		function markDocument(sentenceId){
+			var element = document.getElementById(sentenceId);
+    		element.classList.toggle("goodDoc");
+    		element.classList.toggle("badDoc");
+    		var clusterId = sentenceId.substring(0, sentenceId.indexOf("sentence"));
+    		document.getElementById(clusterId + 'VerifyBox').value = getVerifiedClusterData(clusterId);
+		}
 
+		function getVerifiedClusterData(clusterId){
+			var str = "";
+			var cluster = document.getElementById(clusterId);
+			var rightSide = cluster.getElementsByClassName('col-md-3')[0];
+			var clusterTitle = document.getElementById(clusterId + "Title").innerHTML.trim();
+			var topWords = rightSide.getElementsByClassName('topWord');
+			var docs = cluster.getElementsByClassName('docBody')[0];
+			var goodDocs = docs.getElementsByClassName('goodDoc');
+
+			str += clusterTitle + "\n";
+			for(var i = 0; i < topWords.length; i++){
+				str += topWords[i].innerHTML.trim() + "\n";
+			}
+
+			for(var i=0; i<goodDocs.length; i++)
+            {
+            	var span = goodDocs[i].getElementsByClassName('sentenceTxt')[0];
+            	console.log(span.innerHTML);
+                // str += goodDocs[i].textContent.trim().substring(4, goodDocs[i].textContent.lastIndexOf('\"')) + goodDocs[i].textContent.trim().substring(goodDocs[i].textContent.lastIndexOf('\"') + 1) + "\n";
+
+                str += span.innerHTML.substring(4, span.innerHTML.lastIndexOf('" (')) + span.innerHTML.substring(span.innerHTML.lastIndexOf('(')) + '\n';
+            }
+
+            return str.replace(/"/g, "'");
+		}
+
+		function aggregateValidDocumentsForReclustering(numClusters){
+			$('#form').append("<input type='hidden' name='numClusters' value='" + numClusters + "'>");
+			var goodDocs = document.getElementsByClassName('goodDoc');
+			for(var i = 0; i < goodDocs.length; i++){
+				var goodDocText = goodDocs[i].getElementsByClassName('sentenceTxt')[0].innerText;
+				var txt = goodDocText.replace(/[^A-Za-z-\s]/g,"").replace(/\s{2,}/g, " ");
+				$('#form').append("<input type='hidden' name='docs' value='" + txt + "'>");
+			}
+			
+		}
+	</script>
 	<style type="text/css">
-	#header{
-	    font-size: 2rem;
-	    font-weight: bold;
-	    margin-bottom: 5;
-	}/*
+	#backCover{
+		position: fixed;
+		background: rgba(255,255,255, 1);
+		width: 100%;
+		z-index: 500;
+		left: 0px;
+	}
 	.badDoc{
 		color: rgba(254, 27, 7, 0.7);
 		margin-bottom: 20;
-	}*/
+	}
+	button{
+		margin: 10;
+		float: right;
+	}
 	.clusterData{
 	    border-bottom: 1px solid black;
 	    padding: 10 10;
+	}
+	#clusterSummaries{
+		border-bottom: 1px solid black;
+		padding: 10 10;
 	}
 	.clusterTitle{
 	    font-size: 1.5rem;
@@ -31,16 +86,32 @@
 		overflow-y: scroll;
 		height: 200px;"
 	}
+	.docCount{
+		width: 75%;
+	}
 	.goodDoc{
 		color: black;
 	    margin-bottom: 20;
 	}
-	#header{
-		padding-top: 10;
-	}/*
 	.goodDoc, .badDoc{
 		cursor: pointer;
-	}*/
+	}
+	#header{
+		position: fixed;
+		display: block;
+		background: rgba(255,255,255, 1);
+		z-index: 999;
+	}
+	.summary{
+		float: left;
+		text-align: center;
+	}
+	.summary mark{
+		background-color: rgba(37,101,222,0.6) !important;
+	}
+	#topRow{
+		padding-top: 10;
+	}
 	#totalDocCount{
 		font-size: 1.25rem;
 		margin-bottom: 10;
@@ -56,11 +127,62 @@
 <body>
 	<script>
 		$( document ).ready(function() {
-			console.log('{{ clusters | tojson}}');
+			// var count = '{{ count }}';
+			var row = "<div id='header'> \
+						<div class='row' id='topRow'> \
+							<div class='col-md-12'> \
+								<div id='totalDocCount'> \
+									<h3> Verified Clusters </h3> \
+								</div> \
+							</div> \
+						</div> \
+						<div class='row'> \
+							<div class='col-md-12'> \
+								<form action='{{ url_for('recluster_valid') }}' method='post' id='form' name='stopwordInput'>\
+									Add Stop Word: \
+									<input type='text' name='addStopword'> \
+									Remove Stop Word: \
+									<input type='text' name='removeStopword'> \
+									K: \
+									<input type='text' name='k'> \
+									N Top Words: \
+									<input type='text' name='nTopWords'> \
+									<br> \
+									<button name='reclusterBtn' type='submit' value='recalcDiffSeed'> \
+										Recalculate with New Seed \
+									</button> \
+									<button name='reclusterBtn' type='submit' value='recalcSameSeed'> \
+										Recalculate \
+									</button> \
+								</form>\
+								<br> \
+							</div> \
+						</div> \
+						<div class='row'> \
+							<div class='col-md-12' id='stopWordsRow'> \
+							</div> \
+						</div> \
+						<div class='row'> \
+							<div class='col-md-12' id='clusterSummaries'> \
+								<div> \
+									Overview: \
+								</div> \
+							</div> \
+						</div> \
+						</div> \
+						<div id='backCover'> \
+						</div> \
+						<div id='filler'> \
+						</div>";
+			$(".container").append(row);
+
+
 			var d = JSON.parse(JSON.stringify('{{ clusters | tojson | safe}}'));
 			var data = jQuery.parseJSON( d );
-			console.log(data)
+			var numClusters = 0;
+			var totalDocs = 0;
 			for(cluster in data){
+				numClusters += 1;
 				var id = cluster.replace(/\s+/g, '-');
 				var row = "<div class='row clusterData' id='" + id +"'>\
 								<div class='col-md-3'>\
@@ -81,60 +203,43 @@
 
 				$('.container').append(row);
 
-				console.log(data[cluster]["top_words"]);
-
 				var wordsList = data[cluster]["top_words"];
 				for(i in wordsList){
-					var w = wordsList[i];
-					console.log(w);
-					word = w.substring(0, w.indexOf(' ')) + "<b>" + w.substring(w.indexOf(' '), w.lastIndexOf(' ')) + "</b>" + w.substring(w.lastIndexOf(' '));
+					var word = wordsList[i];
+					if( i === '0' ){
+						var isolatedWord = word.substring(word.indexOf(' '), word.indexOf(' ('));
+						$("#clusterSummaries").append("<div class='summary'><a href='#" + id + "'>" + cluster + "</a><br>" + isolatedWord + " <div id='" + id + "summaryDocCount'></div>" + "</div>");
+					}
 					$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
 				}
 
 				var sentences = data[cluster]['sentences'];
-				console.log(sentences);
 				var sentenceCount = 0;
 				$('#' + id + ' .docCount').append("<div> Documents in cluster: "+ sentences.length +"</div>");
+				$('#' + id + 'summaryDocCount').append(sentences.length + " docs")
 				for(i in sentences){
 					var s = sentences[i];
-					var sentence = "\"..." + s.substring(0, s.lastIndexOf('(')-1) + "\" " + s.substring(s.lastIndexOf('('));
-					$('#' + id + ' .docBody').append("<div class='goodDoc' id='" + id + "sentence" + sentenceCount + "'>"+ sentence +"</div>");
+					var sentence = "\"..." + s.substring(0, s.lastIndexOf('(')) + "\" " + s.substring(s.lastIndexOf('('));
+					$('#' + id + ' .docBody').append("<div class='goodDoc' id='" + id + "sentence" + sentenceCount + "' onclick='markDocument(this.id)'> <input type='checkbox' id ='" + id + "sentence" + sentenceCount +"VerifyBox'>\t<span class='sentenceTxt'>"+ sentence +"</div>");
+					totalDocs += 1;
 					sentenceCount += 1;
 				}
 
+			} //endfor
+			$('#totalDocCount').append('Total Document Count: ' + totalDocs);
 
-				for(var i = 0; i<data[cluster].length; i++){
-					console.log(data[cluster][i]);
-					for (var p in data[cluster][i]) {
-						console.log(p);
-						if(p === "top_words"){
-							for(w in data[cluster][i][p]){
-								word = w.substring(0, w.indexOf(' ')) + "<b>" + w.substring(w.indexOf(' '), w.lastIndexOf(' ')) + "</b>" + w.substring(w.lastIndexOf(' '));
-								$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
-							}
-						}
-						else if(p === "sentences"){
-							$('#' + id + ' .docCount').append("<div> Documents in cluster: "+ data[cluster][i][p].length +"</div>");
-							for(s in data[cluster][i][p]){
-								sentence += "\"..." + s.substring(0, s.lastIndexOf('(')-1) + "\" " + s.substring(s.lastIndexOf('('));
-								$('#' + id + ' .docBody').append("<div class='goodDoc' id='" + id + "sentence" + sentenceCount + "'>"+ sentence +"</div>");
-								sentenceCount += 1;
-							}
-							
-						}
-						
-					}				
-				}
-			}
+			var screenPercent = 100/numClusters + "%";
+			$('.summary').css('width', screenPercent);
+
+			$("#filler").height($("#header").outerHeight());
+			$("#backCover").height($("#header").height());
+			$("#backCover").width($("#container").outerWidth());
+
+			aggregateValidDocumentsForReclustering(numClusters);
 		});
 	</script>
 
 	<div class='container' id = 'pageContainer'>
-		<div class='row' id='header'>
-			<div class='col-md-12'>
-				Verified Clusters
-			</div>
-		</div>
 	</div>
 	
 </body>

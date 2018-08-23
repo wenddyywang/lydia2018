@@ -185,7 +185,7 @@
 				alert(warning);
 			}
 
-			var c = '{{ count }}'
+			// var c = '{{ count }}'
 			var row = "<div id='header'> \
 						<div class='row' id='topRow'> \
 							<div class='col-md-6'> \
@@ -204,7 +204,7 @@
 						</div> \
 						<div class='row'> \
 							<div class='col-md-12'> \
-								<form action='{{ url_for('recluster', counter=count) }}' method='post' id='form' name='stopwordInput'>\
+								<form action='{{ url_for('recluster') }}' method='post' id='form' name='stopwordInput'>\
 									Add Stop Word: \
 									<input type='text' name='addStopword'> \
 									Remove Stop Word: \
