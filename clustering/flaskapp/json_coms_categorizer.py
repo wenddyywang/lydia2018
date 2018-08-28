@@ -328,12 +328,10 @@ def run(doc_source='COMS4170Insight.txt', k=5, n=7, added_stop_word="", removed_
         remove_stop_word(removed_stop_word)
 
     if isinstance(doc_source, str):
-        print("ITS A STRING")
         raw_docs = read_documents(doc_source)
         documents = process_documents(raw_docs)
         original_docs = read_documents(doc_source)
     else:
-        print('i am not stupid')
         raw_docs = doc_source
         documents = process_documents(raw_docs)
         original_docs = doc_source

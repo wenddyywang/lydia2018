@@ -66,8 +66,7 @@
 		left: 0px;
 	}
 	.badDoc{
-		color: rgba(254, 27, 7, 0.7);
-		margin-bottom: 20;
+		color: rgba(169, 169, 169, 0.8);
 	}
 	button{
 		margin: 10;
@@ -106,8 +105,9 @@
 		color: black;
 	    margin-bottom: 20;
 	}
-	.goodDoc, .badDoc{
+	.goodDoc, .badDoc, .neutralDoc{
 		cursor: pointer;
+		margin-bottom: 20;
 	}
 	#header{
 		position: fixed;
@@ -143,18 +143,17 @@
 <body>
 	<script>
 		$( document ).ready(function() {
-
 			var warning = '{{ alert }}';
 			if(warning){
 				alert(warning);
 			}
-			
+
 			// var count = '{{ count }}';
 			var row = "<div id='header'> \
 						<div class='row' id='topRow'> \
 							<div class='col-md-9'> \
 								<div id='totalDocCount'> \
-									<h3> Verified Clusters </h3> \
+									<h3> Clusters of Invalid Documents </h3> \
 								</div> \
 							</div> \
 							<div class='col-md-1'> \

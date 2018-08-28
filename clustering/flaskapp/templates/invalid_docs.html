@@ -2,7 +2,7 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>K-means Text Clustering</title>
+	<title>Invalid Clusters</title>
 	<meta name="description" content="text clustering UI">
 	<meta name="author" content="wendy">
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
@@ -22,7 +22,6 @@
 		    var box = document.getElementById( boxId );
 		    var clusterId = boxId.substring(0, boxId.indexOf('VerifyBox'));
 		    var titleId = clusterId + 'Title';
-		    var summaryTitle = titleId + 'Summary';
 		    if ( box.checked ) {
 		    	var data = getVerifiedClusterData(clusterId);
 		    	box.nextSibling.textContent = "\t Verified";
@@ -34,37 +33,20 @@
 		        var badDocs = document.getElementById(clusterId).getElementsByClassName('badDoc');
 		        if(badDocs.length > 0){
 		        	$("#navXIcon").effect( "shake", {distance:15, times:3}, 800 );
+			        for(var i = 0; i < badDocs.length; i++){
+			        	badDocs[i].style.display = "none";
+			        }
 		        }
-
-		        document.getElementById(summaryTitle).style.color = "#228B22";
-
-		        document.getElementById(clusterId).getElementsByClassName("docBody")[0].style.display = "none";
-		        var topWords = document.getElementById(clusterId).getElementsByClassName("topWord");
-		        for(var i = 0; i < topWords.length; i++){
-		        	topWords[i].style.display = "none";
-		        }
-		        document.getElementById(clusterId).getElementsByClassName("wordHeader")[0].style.display = "none";
-		        // $(clusterId + " .docBody").css("display:none");
-		        // $('.wordHeader, .topWord, .docBody').css('display: none');
 
 		    }
 		    else{
 		    	box.nextSibling.textContent = "\t Verify";
 		    	document.getElementById(titleId).style.color = "#000000";
-		        document.getElementById(summaryTitle).style.color = "#007BFF";
-
 		    	$('#' + clusterId + 'data').remove();
-		    	// var badDocs = document.getElementById(clusterId).getElementsByClassName('badDoc');
-		     //    for(var i = 0; i < badDocs.length; i++){
-		     //    	badDocs[i].style.display = "block";
-		     //    }
-		    	document.getElementById(clusterId).getElementsByClassName("docBody")[0].style.display = "block";
-		        var topWords = document.getElementById(clusterId).getElementsByClassName("topWord");
-		        for(var i = 0; i < topWords.length; i++){
-		        	topWords[i].style.display = "block";
+		    	var badDocs = document.getElementById(clusterId).getElementsByClassName('badDoc');
+		        for(var i = 0; i < badDocs.length; i++){
+		        	badDocs[i].style.display = "block";
 		        }
-		        document.getElementById(clusterId).getElementsByClassName("wordHeader")[0].style.display = "block";
-
 		    }
 
 		}
@@ -93,7 +75,6 @@
 			if(element.className === "badDoc"){
 				element.className = "neutralDoc";
 				$('#' + clusterId + 'summaryDocCount > i').text(numInvalid - 1);
-				$('#' + clusterId + sentenceId + 'badData').remove();
 			}
 			else{
 				element.className = "badDoc";
@@ -101,8 +82,8 @@
 
 	    		var span = element.getElementsByClassName('sentenceTxt')[0];
 			    var str = span.innerHTML.substring(4, span.innerHTML.lastIndexOf('" (')) + span.innerHTML.substring(span.innerHTML.lastIndexOf('(')) + '\n';
-			    str = str.replace(/"/g, "'").trim();
-			    $('#invalidNavForm').append("<input type='hidden' name=\"" + clusterId + sentenceId + "badData\" value=\"" + str + "\">");
+			    str = str.replace(/"/g, "'");
+			    $('#invalidNavForm').append("<input type='hidden' name=\"" + clusterId + "\" value=\"" + str + "\">");
 	    		// document.getElementById(clusterId + 'VerifyBox').value = getVerifiedClusterData(clusterId);
 			}
 			
@@ -130,33 +111,32 @@
 
                 str += span.innerHTML.substring(4, span.innerHTML.lastIndexOf('" (')) + span.innerHTML.substring(span.innerHTML.lastIndexOf('(')) + '\n';
             }
-            return str.replace(/"/g, "'").trim();
+            return str.replace(/"/g, "'");
 		}
 
-		function showHowTo(){
-			alert("Click on individual sentences in each cluster to mark them as irrelevant. After pruning, mark cluster as valid with the 'Verify' checkbox. \n\nClick 'See Verified Clusters' button to go to page of valid clusters. \n\n'Recalculate Invalid Documents' to run k-means algorithm on the leftover off-topic sentences");
+		function aggregateInvalidDocumentsForReclustering(){
+			var badDocs = document.getElementsByClassName('badDoc');
+			$('#form').append("<input type='hidden' name='numDocs' value='" + badDocs.length + "'>");
+
+			for(var i = 0; i < badDocs.length; i++){
+				var badDocText = badDocs[i].getElementsByClassName('sentenceTxt')[0].innerText;
+				var txt = badDocText.replace(/[^A-Za-z-\s]/g,"").replace(/\s{2,}/g, " ");
+				$('#form').append("<input type='hidden' name='docs' value='" + txt + "'>");
+			}
+			
 		}
 
-		// $('[contenteditable]').bind('focus', function() {
-		//     var $this = $(this);
-		//     alert("focused");
-		//     $this.data('before', $this.html());
-		//     return $this;
-		// }).bind('blur keyup paste', function() {
-		//     var $this = $(this);
-		//     if ($this.data('before') !== $this.html()) {
-		//         $this.data('before', $this.html());
-		//         alert("before change trigger");
-		//         $this.trigger('change');
-		//         alert("after change trigger");
-		//     }
-		//     return $this;
-		// });
-
-		// $( ".target" ).change(function() {
-		//   alert( "Handler for .change() called." );
-		// });
-
+		// jQuery.fn.shake = function(interval,distance,times){
+		//    interval = typeof interval == "undefined" ? 100 : interval;
+		//    distance = typeof distance == "undefined" ? 10 : distance;
+		//    times = typeof times == "undefined" ? 3 : times;
+		//    var jTarget = $(this);
+		//    jTarget.css('position','relative');
+		//    for(var iter=0;iter<(times+1);iter++){
+		//       jTarget.animate({ left: ((iter%2==0 ? distance : distance*-1))}, interval);
+		//    }
+		//    return jTarget.animate({ left: 0},interval);
+		// }
 	</script>
 	<style>
 	[contenteditable] { padding: 5px; outline: 0px solid transparent; border-radius: 3px; }
@@ -170,13 +150,14 @@
 		left: 0px;
 	}
 	.badDoc{
-		color: rgba(169, 169, 169, 0.8);
+		color: rgba(254, 27, 7, 0.7);
 	}
 	button{
 		margin: 10;
 		float: right;
 	}
 	.clusterData{
+		margin-top: 20px;
 	    border-bottom: 1px solid black;
 	    padding: 10 10;
 	}
@@ -213,9 +194,6 @@
 		cursor: pointer;
 		margin-bottom: 20;
 	}
-	h3{
-		display: inline-block;
-	}
 	#header{
 		position: fixed;
 		display: block;
@@ -225,15 +203,16 @@
 	.navBtn{
 		border: none;
 	}
+	.recalcHeader{
+		padding-bottom: 20px;
+		border-bottom: 1px solid black;
+	}
 	.summary{
 		float: left;
 		text-align: center;
 	}
 	.summary mark{
 		background-color: rgba(37,101,222,0.6) !important;
-	}
-	.textBox{
-		width: 140px;
 	}
 	#topRow{
 		padding-top: 10;
@@ -261,21 +240,15 @@
 	<!-- <script src='coms_cluster_data.js'></script>  -->
 	<script>
 		$(document).ready(function(){
-			var d = JSON.parse(JSON.stringify('{{ clusters | tojson }}'));
+			var d = JSON.parse(JSON.stringify('{{ data | tojson }}'));
 			var data = jQuery.parseJSON( d );
-
-			var warning = '{{ alert }}';
-			if(warning){
-				alert(warning);
-			}
 
 			// var c = '{{ count }}'
 			var row = "<div id='header'> \
 						<div class='row' id='topRow'> \
 							<div class='col-md-9'> \
 								<div id='totalDocCount'> \
-									<h3> K-Means Text Clustering </h3> \
-									<i class='fas fa-question-circle' onclick='showHowTo()'></i> <br>\
+									<h3> Invalid Documents </h3> \
 								</div> \
 							</div> \
 							<div class='col-md-1'> \
@@ -300,26 +273,23 @@
 								</form>\
 							</div>\
 						</div> \
-						<div class='row'> \
+						<div class='row recalcHeader'> \
 							<div class='col-md-12'> \
-								<form action='{{ url_for('recluster') }}' method='post' id='form' name='stopwordInput'>\
+								<form action='{{ url_for('recluster_invalid') }}' method='post' id='form' name='stopwordInput'>\
 									Add Stop Word: \
-									<input type='text' class='textbox' name='addStopword'> \
+									<input type='text' name='addStopword'> \
 									Remove Stop Word: \
-									<input type='text' class='textbox' name='removeStopword'> \
-									Number of Clusters: \
-									<input type='text' class='textbox' name='k'> \
+									<input type='text' name='removeStopword'> \
+									K: \
+									<input type='text' name='k'> \
 									N Top Words: \
-									<input type='text' class='textbox' name='nTopWords'> \
+									<input type='text' name='nTopWords'> \
 									<br> \
-									<button name='reclusterBadBtn' id='reclusterBadBtn' type='submit' value=''> \
-										Recalculate Invalid Documents \
-									</button> \
 									<button name='reclusterBtn' type='submit' value='recalcDiffSeed'> \
-										Recalculate with New Seed \
+										Calculate Clusters with New Seed \
 									</button> \
 									<button name='reclusterBtn' type='submit' value='recalcSameSeed'> \
-										Recalculate \
+										Calculate Clusters \
 									</button> \
 								</form>\
 								<br> \
@@ -329,13 +299,6 @@
 							<div class='col-md-12' id='stopWordsRow'> \
 							</div> \
 						</div> \
-						<div class='row'> \
-							<div class='col-md-12' id='clusterSummaries'> \
-								<div> \
-									Overview: \
-								</div> \
-							</div> \
-						</div> \
 						</div> \
 						<div id='backCover'> \
 						</div> \
@@ -343,80 +306,29 @@
 						</div>";
 			$(".container").append(row);
 
-			var numClusters = 0;
+			var sentenceCount = 0;
 			for(d in data){
-				if(d === "Document count"){
-					$('#totalDocCount').append('Total Document Count: ' + data[d]);
-				}
-				else{
-					var id = d.replace(/\s+/g, '-');
-					$("#clusterSummaries").append("<div class='summary'><a href='#" + id + "' id='" + id + "TitleSummary'>" + d + "</a><br><b>" + data[d][0]["word"] + "</b> <div id='" + id + "summaryDocCount'></div>" + "</div>");
-					numClusters = numClusters + 1;
-					// var element = document.getElementById('totalDocCount').outerHTML;
-					var row = "<div class='row clusterData' id='" + id +"'>\
-									<div class='col-md-3'>\
-										<div class='clusterTitle' id='" + id + "Title' contenteditable='true'> \
-											"+ d + "\
-										</div>\
-										<div class='wordHeader'>Top Words: \
-										</div>\
-									</div>\
-									<div class='col-md-9'>\
-										<div class='docHeader'>\
-											<div class='docCount'>\
-											</div>\
-											<div class='verify'>\
-		    									<form action='{{ url_for('verified') }}' method='post' class='verifyForm'>\
-		    										<input type='checkbox' id ='" + id + "VerifyBox' onclick='markValid(this.id)'> \tVerify \
-		    									</form>\
-											</div>\
-										</div>\
-										<div class='docBody'>\
-										</div>\
-									</div>\
-								</div>";
-					// console.log(id);
-					// console.log(data[d][0]);
-					$(".container").append(row);
-					// var chbxId = "'" + id + "Chbx'";
-					var word = "";
-					// var sentence = "";
-					var sentenceCount = 0;
-					var sentenceWeight = "";
-					for(var i = 0; i<data[d].length; i++){
-						for (var p in data[d][i]) {
-							if(p === "word"){
-								word += (i+1) + ". <b>" + data[d][i][p] + "</b> ";
-							}
-							else if(p === "word_weight"){
-								word += "(" + data[d][i][p] + ")<br>";
-								$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
-								word = "";
-							}
-							else if(p === "sentence"){
-								var sentence = "\"..." + data[d][i][p] + "\" " + sentenceWeight;
-								$('#' + id + ' .docBody').append("<div class='neutralDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "'> <i class='fas fa-check' id='" + id + "sentence" + sentenceCount + "check' onclick='checkDocument(this.id)'></i> <i class='fas fa-times' id='" + id + "sentence" + sentenceCount + "X' onclick='invalidateDocument(this.id)'></i>\t<span class='sentenceTxt'>"+ sentence +"</div>");
-								sentenceCount += 1;
-								sentenceWeight = "";
-							}
-							else if(p === "sent_weight"){
-								sentenceWeight = "(" + data[d][i][p] + ")</span><br>";
-							}
-							else if(p === "doc_count"){
-								$('#' + id + ' .docCount').append("<div> Documents in cluster: "+ data[d][i][p] +"</div>");
-								$('#' + id + 'summaryDocCount').append(data[d][i][p] + " docs (<i class='fas fa-times'> 0</i>)")
-							}
-							
-						}				
-					}
-					// document.getElementById(id + 'VerifyBox').value = getVerifiedClusterData(id);
+				var numDocs = d.substring(0, d.indexOf(" docs"));
+				$('#totalDocCount').append('Total Document Count: ' + numDocs);
+
+				// var element = document.getElementById('totalDocCount').outerHTML;
+				var row = "<div class='row' >\
+								<div class='col-md-12 clusterData'> \
+								</div> \
+							</div>";
+				$(".container").append(row);
+
+				for(var i = 0; i<data[d].length; i++){
+					console.log(data[d][i]);
+					var s = data[d][i];
+					var sentence = "\"..." + s.substring(0, s.lastIndexOf('(')) + "\" " + s.substring(s.lastIndexOf('('));
+					$('.clusterData').append("<div class='badDoc' id='sentence" + sentenceCount + "' onclick='markDocument(this.id)'> <input type='checkbox' id ='sentence" + sentenceCount +"VerifyBox'>\t<span class='sentenceTxt'>"+ sentence +"</div>");
+					sentenceCount += 1;
 				}
 
 
 
 			} // endfor
-			var screenPercent = 100/numClusters + "%";
-			$('.summary').css('width', screenPercent);
 
 			var stopWords = '{{stop_words}}'.replace(/&#39;/g, "").replace(/{/g, "").replace(/}/g, "");
 			// stopWords.forEach(function(value) {
@@ -434,15 +346,7 @@
 			$("#backCover").height($("#header").height());
 			$("#backCover").width($("#container").outerWidth());
 
-			var titleTxt = $('.clusterTitle').html();
-			$('.clusterTitle').blur(function() {
-				if (titleTxt!=$(this).html()){
-			        titleTxt = $(this).html();
-			        var id = this.id + "Summary";
-			        $('#' + id).text(titleTxt);
-			    }
-			});
-
+			aggregateInvalidDocumentsForReclustering();
 
 		})
 		
