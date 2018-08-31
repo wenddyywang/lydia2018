@@ -35,83 +35,6 @@
 			$("verifiedContainer").hide();
 			$("invalidContainer").hide();
 
-			// var c = '{{ count }}'
-			var row = "<div id='header'> \
-						<div class='row' id='topRow'> \
-							<div class='col-md-9'> \
-								<div id='pageTitle'> \
-									<h3> K-Means Text Clustering </h3> \
-									<i class='fas fa-question-circle' onclick='showHowTo()'></i> <br>\
-								</div> \
-							</div> \
-							<div class='col-md-1'> \
-								<form id='homeNavForm'>\
-									<button class='navBtn' name='homeBtn' id='homeBtn' type='button'> \
-										<i class='fas fa-home fa-3x'></i>\
-									</button> \
-								</form>\
-							</div>\
-							<div class='col-md-1'> \
-								<form id='verifiedNavForm'>\
-									<button class='navBtn' name='verifyBtn' id='verifyBtn' type='button'> \
-										<i class='fas fa-check fa-3x' id='navCheckIcon'></i> \
-									</button> \
-								</form>\
-							</div>\
-							<div class='col-md-1'> \
-								<form id='invalidNavForm'>\
-									<button class='navBtn' name='invalidBtn' id='invalidBtn' type='button'> \
-										<i class='fas fa-times fa-3x' id='navXIcon'></i> \
-									</button> \
-								</form>\
-							</div>\
-						</div> \
-						<div class='row'> \
-							<div class='col-md-12'> \
-								<form id='form' name='stopwordInput'>\
-									Add Stop Word: \
-									<input type='text' class='textbox' name='addStopword'> \
-									Remove Stop Word: \
-									<input type='text' class='textbox' name='removeStopword'> \
-									Number of Clusters: \
-									<input type='text' class='textbox' name='k'> \
-									N Top Words: \
-									<input type='text' class='textbox' name='nTopWords'> \
-									<br> \
-									<button class='reclusterBtn' id='recalcNewSeedBtn' name='reclusterBtn' type='button' value='recalcDiffSeed'> \
-										Recalculate with New Seed \
-									</button> \
-									<button class='reclusterBtn' id='recalcBtn' name='reclusterBtn' type='button' value='recalcSameSeed'> \
-										Recalculate \
-									</button> \
-								</form>\
-								<br> \
-							</div> \
-						</div> \
-						<div class='row'> \
-							<div class='col-md-12' id='stopWordsRow'> \
-							</div> \
-						</div> \
-						<div class='row'> \
-							<div class='col-md-12' id='clusterSummaries'> \
-								<div> \
-									Overview: \
-									<div id='homeSummaries'> \
-									</div> \
-									<div id='verifiedSummaries'> \
-									</div> \
-									<div id='invalidSummaries'> \
-									</div> \
-								</div> \
-							</div> \
-						</div> \
-						</div> \
-						<div id='backCover'> \
-						</div> \
-						<div id='filler'> \
-						</div>";
-			//$("#menu").append(row);
-
 			$("#verifiedSummaries").hide();
 			$("#invalidSummaries").hide();
 
@@ -143,7 +66,7 @@
 												</div>\
 												<div class='verify'>\
 			    									<form action='{{ url_for('verified') }}' method='post' class='verifyForm'>\
-			    										<input type='checkbox' id ='" + id + "VerifyBox' onclick='markValid(this.id)'> \tVerify \
+			    										<input type='checkbox' id ='" + id + "VerifyBox' onclick='markValid(this.id)'> \t<span style='color:black;'> Verify </span>\
 			    									</form>\
 												</div>\
 											</div>\
@@ -166,7 +89,7 @@
 								}
 								else if(p === "word_weight"){
 									word += "(" + data[d][i][p] + ")<br>";
-									$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
+									$('#homeContainer #' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
 									word = "";
 								}
 								else if(p === "sentence"){
@@ -317,34 +240,6 @@
 
 			}
 
-
-			function appendInvalidData(data){
-				var sentenceCount = 0;
-				for(d in data){
-					console.log(d);
-					var totalDocs = d.substring(0, d.indexOf(" docs"));
-					$('#pageTitle').append("<span id='invTotalDocCount'> Total Document Count: " + totalDocs + "</span>");
-
-					// var element = document.getElementById('totalDocCount').outerHTML;
-					var row = "<div class='row' >\
-									<div class='col-md-12 clusterData'> \
-									</div> \
-								</div>";
-					$("#invalidContainer").append(row);
-
-					for(var i = 0; i<data[d].length; i++){
-						console.log(data[d][i]);
-						var s = data[d][i];
-						var sentence = "\"..." + s.substring(0, s.lastIndexOf('(')) + "\" " + s.substring(s.lastIndexOf('('));
-						$('#invalidContainer .clusterData').append("<div class='badDoc' id='sentence" + sentenceCount + "' onclick='markDocument(this.id)'> <input type='checkbox' id ='sentence" + sentenceCount +"VerifyBox'>\t<span class='sentenceTxt'>"+ sentence +"</div>");
-						sentenceCount += 1;
-					}					
-				}
-
-
-			}
-
-
 			function aggregateDocsForReclustering(){
 				$("#form input[name='docs']").remove();
 				var remainingDocs = document.getElementById('homeContainer').querySelectorAll('.goodDoc,.neutralDoc,.badDoc');
@@ -414,31 +309,6 @@
 				});
 
 				$('#verifiedNavForm').click(function(){
-					// var user = $('#txtUsername').val();
-					// var pass = $('#txtPassword').val();
-					// $.ajax({
-					// 	url: '/verified',
-					// 	data: $('#verifiedNavForm').serialize(),
-					// 	type: 'POST',
-					// 	success: function(response){
-					// 		var d = JSON.parse(JSON.stringify(response));
-					// 		var data = jQuery.parseJSON( d );
-					// 		$("#homeContainer").hide();
-					// 		$("#homeTotalDocCount").hide();
-					// 		$("#homeSummaries").hide();
-					// 		$("#invalidContainer").hide();
-					// 		$("#invTotalDocCount").hide();
-					// 		$("#invalidSummaries").hide();
-					// 		appendVerifiedHtml(data);
-					// 		$("#verifiedContainer").show();
-					// 		$("#verTotalDocCount").show();
-					// 		$("#verifiedSummaries").show();
-					// 	},
-					// 	error: function(error){
-					// 		console.log(error);
-					// 	}
-					// });
-
 					$("#homeContainer").hide();
 					$("#homeTotalDocCount").hide();
 					$("#homeSummaries").hide();
@@ -452,33 +322,6 @@
 					$("#verifiedSummaries").show();
 				});
 	
-				// $('#invalidNavForm').click(function(){
-				// 	// var user = $('#txtUsername').val();
-				// 	// var pass = $('#txtPassword').val();
-				// 	$.ajax({
-				// 		url: '/invalids',
-				// 		data: $('#invalidNavForm').serialize(),
-				// 		type: 'POST',
-				// 		success: function(response){
-				// 			console.log(response);
-				// 			var d = JSON.parse(JSON.stringify(response));
-				// 			var data = jQuery.parseJSON( d );
-				// 			$("#homeContainer").hide();
-				// 			$("#homeTotalDocCount").hide();
-				// 			$("#homeSummaries").hide();
-				// 			$("#verifiedContainer").hide();
-				// 			$("#verTotalDocCount").hide();
-				// 			$("#verifiedSummaries").hide();
-				// 			appendInvalidData(data);
-				// 			$("#invalidContainer").show();
-				// 			$("#invTotalDocCount").show();
-				// 			$("#invalidSummaries").show();
-				// 		},
-				// 		error: function(error){
-				// 			console.log(error);
-				// 		}
-				// 	});
-				// });
 			});
 
 		})
@@ -489,30 +332,23 @@
 		<div id="menu">
 			<div id='header'> 
 						<div class='row' id='topRow'> 
-							<div class='col-md-9'> 
+							<div class='col-md-10'> 
 								<div id='pageTitle'> 
 									<h3> K-Means Text Clustering </h3> 
 									<i class='fas fa-question-circle' onclick='showHowTo()'></i> <br>
 								</div> 
 							</div> 
 							<div class='col-md-1'> 
-								<form action='{{ url_for('index') }}' method='post'>
+								<span id='homeNavForm'>
 									<button class='navBtn' name='homeBtn' id='homeBtn' type='submit'> 
 										<i class='fas fa-home fa-3x'></i>
 									</button> 
-								</form>
+								</span>
 							</div>
 							<div class='col-md-1'> 
 								<form id='verifiedNavForm'>
 									<button class='navBtn' name='verifyBtn' id='verifyBtn' type='button'> 
 										<i class='fas fa-check fa-3x' id='navCheckIcon'></i> 
-									</button> 
-								</form>
-							</div>
-							<div class='col-md-1'> 
-								<form id='invalidNavForm'>
-									<button class='navBtn' name='invalidBtn' id='invalidBtn' type='button'> 
-										<i class='fas fa-times fa-3x' id='navXIcon'></i> 
 									</button> 
 								</form>
 							</div>
@@ -530,10 +366,10 @@
 									<input type='text' class='textbox' name='nTopWords'> 
 									<br> 
 									<button class='reclusterBtn' id='recalcNewSeedBtn' name='reclusterBtn' type='button' value='recalcDiffSeed'> 
-										Recalculate with New Seed 
+										Re-Cluster with New Seed 
 									</button> 
-									<button class='reclusterBtn' id='recalcBtn' name='reclusterBtn' type='button' value='recalcSameSeed'> 
-										Recalculate 
+									<button class='reclusterBtn' id='recalcBtn' name='reclusterBtn' type='button' value='recalcSameSeed'>	
+										Re-Cluster 
 									</button> 
 								</form>
 								<br> 
