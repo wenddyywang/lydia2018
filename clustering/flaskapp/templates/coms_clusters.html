@@ -17,243 +17,9 @@
 	<meta http-equiv="Expires" content="0" />
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-	<script>
-		function markValid(boxId) {
-		    var box = document.getElementById( boxId );
-		    var clusterId = boxId.substring(0, boxId.indexOf('VerifyBox'));
-		    var titleId = clusterId + 'Title';
-		    var summaryTitle = titleId + 'Summary';
-		    if ( box.checked ) {
-		    	var data = getVerifiedClusterData(clusterId);
-		    	box.nextSibling.textContent = "\t Verified";
-		        document.getElementById(titleId).style.color = "#228B22";
-		        $('#verifiedNavForm').append("<input type='hidden' id=\"" + clusterId + "data\" name=\"" + clusterId + "\" value=\"" + data + "\">")
-		        // bounce('#navCheckIcon');
-		        // $('#navCheckIcon').shake();
-		        $("#navCheckIcon").effect( "shake", {distance:15, times:3}, 800 );
-		        var badDocs = document.getElementById(clusterId).getElementsByClassName('badDoc');
-		        if(badDocs.length > 0){
-		        	$("#navXIcon").effect( "shake", {distance:15, times:3}, 800 );
-		        }
+	<link rel="stylesheet" type="text/css" href="../static/styles.css" />
+	<script type="text/javascript" src="../static/script.js"></script>
 
-		        document.getElementById(summaryTitle).style.color = "#228B22";
-
-		        document.getElementById(clusterId).getElementsByClassName("docBody")[0].style.display = "none";
-		        var topWords = document.getElementById(clusterId).getElementsByClassName("topWord");
-		        for(var i = 0; i < topWords.length; i++){
-		        	topWords[i].style.display = "none";
-		        }
-		        document.getElementById(clusterId).getElementsByClassName("wordHeader")[0].style.display = "none";
-		        // $(clusterId + " .docBody").css("display:none");
-		        // $('.wordHeader, .topWord, .docBody').css('display: none');
-
-		    }
-		    else{
-		    	box.nextSibling.textContent = "\t Verify";
-		    	document.getElementById(titleId).style.color = "#000000";
-		        document.getElementById(summaryTitle).style.color = "#007BFF";
-
-		    	$('#' + clusterId + 'data').remove();
-		    	// var badDocs = document.getElementById(clusterId).getElementsByClassName('badDoc');
-		     //    for(var i = 0; i < badDocs.length; i++){
-		     //    	badDocs[i].style.display = "block";
-		     //    }
-		    	document.getElementById(clusterId).getElementsByClassName("docBody")[0].style.display = "block";
-		        var topWords = document.getElementById(clusterId).getElementsByClassName("topWord");
-		        for(var i = 0; i < topWords.length; i++){
-		        	topWords[i].style.display = "block";
-		        }
-		        document.getElementById(clusterId).getElementsByClassName("wordHeader")[0].style.display = "block";
-
-		    }
-
-		}
-
-		function checkDocument(checkId){
-			var sentenceId = checkId.substring(0, checkId.indexOf('check'));
-			var element = document.getElementById(sentenceId);
-			if(element.className === "badDoc"){
-				var clusterId = sentenceId.substring(0, sentenceId.indexOf("sentence"));
-	    		var numInvalid = parseInt($('#' + clusterId + 'summaryDocCount > i').text());
-	    		$('#' + clusterId + 'summaryDocCount > i').text(numInvalid - 1);
-	    		element.className = "goodDoc";
-			}
-			else{
-				element.classList.toggle("goodDoc");
-    			element.classList.toggle("neutralDoc");
-			}
-    		
-		}
-
-		function invalidateDocument(xId){
-			var sentenceId = xId.substring(0, xId.indexOf('X'));
-			var element = document.getElementById(sentenceId);
-	    	var clusterId = sentenceId.substring(0, sentenceId.indexOf("sentence"));
-	    	var numInvalid = parseInt($('#' + clusterId + 'summaryDocCount > i').text());
-			if(element.className === "badDoc"){
-				element.className = "neutralDoc";
-				$('#' + clusterId + 'summaryDocCount > i').text(numInvalid - 1);
-				$('#' + clusterId + sentenceId + 'badData').remove();
-			}
-			else{
-				element.className = "badDoc";
-	    		$('#' + clusterId + 'summaryDocCount > i').text(numInvalid + 1);
-
-	    		var span = element.getElementsByClassName('sentenceTxt')[0];
-			    var str = span.innerHTML.substring(4, span.innerHTML.lastIndexOf('" (')) + span.innerHTML.substring(span.innerHTML.lastIndexOf('(')) + '\n';
-			    str = str.replace(/"/g, "'").trim();
-			    $('#invalidNavForm').append("<input type='hidden' name=\"" + clusterId + sentenceId + "badData\" value=\"" + str + "\">");
-	    		// document.getElementById(clusterId + 'VerifyBox').value = getVerifiedClusterData(clusterId);
-			}
-			
-		}
-
-		function getVerifiedClusterData(clusterId){
-			var str = "";
-			var cluster = document.getElementById(clusterId);
-			var rightSide = cluster.getElementsByClassName('col-md-3')[0];
-			var clusterTitle = document.getElementById(clusterId + "Title").innerHTML.trim();
-			var topWords = rightSide.getElementsByClassName('topWord');
-			var docs = cluster.getElementsByClassName('docBody')[0];
-			var goodDocs = docs.querySelectorAll('.goodDoc,.neutralDoc');
-			// var goodDocs = docs.getElementsByClassName('goodDoc');
-
-			str += clusterTitle + "\n";
-			for(var i = 0; i < topWords.length; i++){
-				str += topWords[i].innerHTML.trim() + "\n";
-			}
-
-			for(var i=0; i<goodDocs.length; i++)
-            {
-            	var span = goodDocs[i].getElementsByClassName('sentenceTxt')[0];
-                // str += goodDocs[i].textContent.trim().substring(4, goodDocs[i].textContent.lastIndexOf('\"')) + goodDocs[i].textContent.trim().substring(goodDocs[i].textContent.lastIndexOf('\"') + 1) + "\n";
-
-                str += span.innerHTML.substring(4, span.innerHTML.lastIndexOf('" (')) + span.innerHTML.substring(span.innerHTML.lastIndexOf('(')) + '\n';
-            }
-            return str.replace(/"/g, "'").trim();
-		}
-
-		function showHowTo(){
-			alert("Click on individual sentences in each cluster to mark them as irrelevant. After pruning, mark cluster as valid with the 'Verify' checkbox. \n\nClick 'See Verified Clusters' button to go to page of valid clusters. \n\n'Recalculate Invalid Documents' to run k-means algorithm on the leftover off-topic sentences");
-		}
-
-		// $('[contenteditable]').bind('focus', function() {
-		//     var $this = $(this);
-		//     alert("focused");
-		//     $this.data('before', $this.html());
-		//     return $this;
-		// }).bind('blur keyup paste', function() {
-		//     var $this = $(this);
-		//     if ($this.data('before') !== $this.html()) {
-		//         $this.data('before', $this.html());
-		//         alert("before change trigger");
-		//         $this.trigger('change');
-		//         alert("after change trigger");
-		//     }
-		//     return $this;
-		// });
-
-		// $( ".target" ).change(function() {
-		//   alert( "Handler for .change() called." );
-		// });
-
-	</script>
-	<style>
-	[contenteditable] { padding: 5px; outline: 0px solid transparent; border-radius: 3px; }
-	[contenteditable]:not(:focus) { border: 2px dashed #ddd; }
-	[contenteditable]:hover { border: 2px solid #51a7e8; box-shadow: inset 0 2px 2px rgba(0,0,0,0.075),0 0 5px rgba(81,167,232,0.5); }
-	#backCover{
-		position: fixed;
-		background: rgba(255,255,255, 1);
-		width: 100%;
-		z-index: 500;
-		left: 0px;
-	}
-	.badDoc{
-		color: rgba(169, 169, 169, 0.8);
-	}
-	button{
-		margin: 10;
-		float: right;
-	}
-	.clusterData{
-	    border-bottom: 1px solid black;
-	    padding: 10 10;
-	}
-	#clusterSummaries{
-		border-bottom: 1px solid black;
-		padding: 10 10;
-	}
-	.clusterTitle{
-	    font-size: 1.5rem;
-	    font-weight: bold;
-	    margin-bottom: 5;
-	}
-	.docBody{
-		overflow-y: scroll;
-		height: 200px;"
-	}
-	.docCount{
-		float: left;
-		width: 75%;
-	}
-	.fa-check{
-		color: green;
-	}
-	.fa-question-circle {
-		cursor: pointer;
-	}
-	.fa-times{
-		color: red;
-	}
-	.goodDoc{
-		color: green;
-	}
-	.goodDoc, .badDoc, .neutralDoc{
-		cursor: pointer;
-		margin-bottom: 20;
-	}
-	h3{
-		display: inline-block;
-	}
-	#header{
-		position: fixed;
-		display: block;
-		background: rgba(255,255,255, 1);
-		z-index: 999;
-	}
-	.navBtn{
-		border: none;
-	}
-	.summary{
-		float: left;
-		text-align: center;
-	}
-	.summary mark{
-		background-color: rgba(37,101,222,0.6) !important;
-	}
-	.textBox{
-		width: 140px;
-	}
-	#topRow{
-		padding-top: 10;
-	}
-	#totalDocCount{
-		font-size: 1.25rem;
-		margin-bottom: 10;
-	}
-/*	.verify{
-		float: right;
-	}*/
-	.wordHeader, .docHeader{
-		font-size: 1.25rem;
-	    margin-bottom: 10;
-	}
-	/*
-	input[type='checkbox']{
-		padding-bottom: : 0.5rem;
-	}*/
-	</style>
 </head>
 
 <body>
@@ -261,40 +27,40 @@
 	<!-- <script src='coms_cluster_data.js'></script>  -->
 	<script>
 		$(document).ready(function(){
-			var d = JSON.parse(JSON.stringify('{{ clusters | tojson }}'));
-			var data = jQuery.parseJSON( d );
 
-			var warning = '{{ alert }}';
-			if(warning){
-				alert(warning);
-			}
+			// var warning = '{{ alert }}';
+			// if(warning){
+			// 	alert(warning);
+			// }
+			$("verifiedContainer").hide();
+			$("invalidContainer").hide();
 
 			// var c = '{{ count }}'
 			var row = "<div id='header'> \
 						<div class='row' id='topRow'> \
 							<div class='col-md-9'> \
-								<div id='totalDocCount'> \
+								<div id='pageTitle'> \
 									<h3> K-Means Text Clustering </h3> \
 									<i class='fas fa-question-circle' onclick='showHowTo()'></i> <br>\
 								</div> \
 							</div> \
 							<div class='col-md-1'> \
-								<form action='{{ url_for('index') }}' method='post'>\
-									<button class='navBtn' name='homeBtn' id='homeBtn' type='submit'> \
+								<form id='homeNavForm'>\
+									<button class='navBtn' name='homeBtn' id='homeBtn' type='button'> \
 										<i class='fas fa-home fa-3x'></i>\
 									</button> \
 								</form>\
 							</div>\
 							<div class='col-md-1'> \
-								<form action='{{ url_for('verified') }}' method='post' id='verifiedNavForm' target='_blank'>\
-									<button class='navBtn' name='verifyBtn' id='verifyBtn' type='submit'> \
+								<form id='verifiedNavForm'>\
+									<button class='navBtn' name='verifyBtn' id='verifyBtn' type='button'> \
 										<i class='fas fa-check fa-3x' id='navCheckIcon'></i> \
 									</button> \
 								</form>\
 							</div>\
 							<div class='col-md-1'> \
-								<form action='{{ url_for('invalids') }}' method='post' id='invalidNavForm' target='_blank'>\
-									<button class='navBtn' name='invalidBtn' id='invalidBtn' type='submit'> \
+								<form id='invalidNavForm'>\
+									<button class='navBtn' name='invalidBtn' id='invalidBtn' type='button'> \
 										<i class='fas fa-times fa-3x' id='navXIcon'></i> \
 									</button> \
 								</form>\
@@ -302,7 +68,7 @@
 						</div> \
 						<div class='row'> \
 							<div class='col-md-12'> \
-								<form action='{{ url_for('recluster') }}' method='post' id='form' name='stopwordInput'>\
+								<form id='form' name='stopwordInput'>\
 									Add Stop Word: \
 									<input type='text' class='textbox' name='addStopword'> \
 									Remove Stop Word: \
@@ -312,13 +78,10 @@
 									N Top Words: \
 									<input type='text' class='textbox' name='nTopWords'> \
 									<br> \
-									<button name='reclusterBadBtn' id='reclusterBadBtn' type='submit' value=''> \
-										Recalculate Invalid Documents \
-									</button> \
-									<button name='reclusterBtn' type='submit' value='recalcDiffSeed'> \
+									<button class='reclusterBtn' id='recalcNewSeedBtn' name='reclusterBtn' type='button' value='recalcDiffSeed'> \
 										Recalculate with New Seed \
 									</button> \
-									<button name='reclusterBtn' type='submit' value='recalcSameSeed'> \
+									<button class='reclusterBtn' id='recalcBtn' name='reclusterBtn' type='button' value='recalcSameSeed'> \
 										Recalculate \
 									</button> \
 								</form>\
@@ -333,6 +96,12 @@
 							<div class='col-md-12' id='clusterSummaries'> \
 								<div> \
 									Overview: \
+									<div id='homeSummaries'> \
+									</div> \
+									<div id='verifiedSummaries'> \
+									</div> \
+									<div id='invalidSummaries'> \
+									</div> \
 								</div> \
 							</div> \
 						</div> \
@@ -341,24 +110,96 @@
 						</div> \
 						<div id='filler'> \
 						</div>";
-			$(".container").append(row);
+			//$("#menu").append(row);
 
-			var numClusters = 0;
-			for(d in data){
-				if(d === "Document count"){
-					$('#totalDocCount').append('Total Document Count: ' + data[d]);
-				}
-				else{
-					var id = d.replace(/\s+/g, '-');
-					$("#clusterSummaries").append("<div class='summary'><a href='#" + id + "' id='" + id + "TitleSummary'>" + d + "</a><br><b>" + data[d][0]["word"] + "</b> <div id='" + id + "summaryDocCount'></div>" + "</div>");
-					numClusters = numClusters + 1;
-					// var element = document.getElementById('totalDocCount').outerHTML;
-					var row = "<div class='row clusterData' id='" + id +"'>\
-									<div class='col-md-3'>\
-										<div class='clusterTitle' id='" + id + "Title' contenteditable='true'> \
-											"+ d + "\
+			$("#verifiedSummaries").hide();
+			$("#invalidSummaries").hide();
+
+			var d = JSON.parse(JSON.stringify('{{ clusters | tojson }}'));
+			var data = jQuery.parseJSON( d );
+
+			function appendHomeHtml(data){
+				var numClusters = 0;
+				for(d in data){
+					if(d === "Document count"){
+						$('#pageTitle').append("<span id='homeTotalDocCount'> Total Document Count: " + data[d] + "</span>");
+					}
+					else{
+						var id = d.replace(/\s+/g, '-');
+						$("#homeSummaries").append("<div class='summary' id='" + id + "Summary'><a href='#" + id + "' id='" + id + "TitleSummary'>" + d + "</a><div class='summaryFirstWord'><b>" + data[d][0]["word"] + "</b></div><div class='summaryDocCount'></div>" + "</div>");
+						numClusters = numClusters + 1;
+						// var element = document.getElementById('pageTitle').outerHTML;
+						var row = "<div class='row clusterData' id='" + id +"'>\
+										<div class='col-md-3'>\
+											<div class='clusterTitle' id='" + id + "Title' contenteditable='true'> \
+												"+ d + "\
+											</div>\
+											<div class='wordHeader'>Top Words: \
+											</div>\
 										</div>\
-										<div class='wordHeader'>Top Words: \
+										<div class='col-md-9'>\
+											<div class='docHeader'>\
+												<div class='docCount'>\
+												</div>\
+												<div class='verify'>\
+			    									<form action='{{ url_for('verified') }}' method='post' class='verifyForm'>\
+			    										<input type='checkbox' id ='" + id + "VerifyBox' onclick='markValid(this.id)'> \tVerify \
+			    									</form>\
+												</div>\
+											</div>\
+											<div class='docBody'>\
+											</div>\
+										</div>\
+									</div>";
+						// console.log(id);
+						// console.log(data[d][0]);
+						$("#homeContainer").append(row);
+						// var chbxId = "'" + id + "Chbx'";
+						var word = "";
+						// var sentence = "";
+						var sentenceCount = 0;
+						var sentenceWeight = "";
+						for(var i = 0; i<data[d].length; i++){
+							for (var p in data[d][i]) {
+								if(p === "word"){
+									word += (i+1) + ". <b>" + data[d][i][p] + "</b> ";
+								}
+								else if(p === "word_weight"){
+									word += "(" + data[d][i][p] + ")<br>";
+									$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
+									word = "";
+								}
+								else if(p === "sentence"){
+									var sentence = "\"..." + data[d][i][p] + "\" " + sentenceWeight;
+									$('#' + id + ' .docBody').append("<div class='neutralDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "'> <i class='fas fa-check' id='" + id + "sentence" + sentenceCount + "check' onclick='checkDocument(this.id)'></i> <i class='fas fa-times' id='" + id + "sentence" + sentenceCount + "X' onclick='invalidateDocument(this.id)'></i>\t<span class='sentenceTxt'>"+ sentence +"</div>");
+									sentenceCount += 1;
+									sentenceWeight = "";
+								}
+								else if(p === "sent_weight"){
+									sentenceWeight = "(" + data[d][i][p] + ")</span><br>";
+								}
+								else if(p === "doc_count"){
+									$('#homeContainer #' + id + ' .docCount').append("Documents in cluster: "+ data[d][i][p]);
+									$('#homeSummaries #' + id + 'Summary .summaryDocCount').append(data[d][i][p] + " docs (<i class='fas fa-times'> 0</i>)")
+								}
+								
+							}				
+						}
+						// document.getElementById(id + 'VerifyBox').value = getVerifiedClusterData(id);
+					}
+
+
+
+				} // endfor
+
+				var screenPercent = 100/numClusters + "%";
+				$('#homeSummaries .summary').css('width', screenPercent);
+
+				var row = "<div id='miscCluster'> \
+								<div class='row clusterData'>\
+									<div class='col-md-3'>\
+										<div class='clusterTitle' id='miscClusterTitle' contenteditable='true'> \
+											Miscellaneous \
 										</div>\
 									</div>\
 									<div class='col-md-9'>\
@@ -366,62 +207,27 @@
 											<div class='docCount'>\
 											</div>\
 											<div class='verify'>\
-		    									<form action='{{ url_for('verified') }}' method='post' class='verifyForm'>\
-		    										<input type='checkbox' id ='" + id + "VerifyBox' onclick='markValid(this.id)'> \tVerify \
-		    									</form>\
+												<form action='{{ url_for('verified') }}' method='post' class='verifyForm'>\
+													<input type='checkbox' id ='miscVerifyBox' onclick='markValid(this.id)'> \tVerify \
+												</form>\
 											</div>\
 										</div>\
-										<div class='docBody'>\
+										<div class='docBody' id='miscBody'>\
 										</div>\
 									</div>\
-								</div>";
-					// console.log(id);
-					// console.log(data[d][0]);
-					$(".container").append(row);
-					// var chbxId = "'" + id + "Chbx'";
-					var word = "";
-					// var sentence = "";
-					var sentenceCount = 0;
-					var sentenceWeight = "";
-					for(var i = 0; i<data[d].length; i++){
-						for (var p in data[d][i]) {
-							if(p === "word"){
-								word += (i+1) + ". <b>" + data[d][i][p] + "</b> ";
-							}
-							else if(p === "word_weight"){
-								word += "(" + data[d][i][p] + ")<br>";
-								$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
-								word = "";
-							}
-							else if(p === "sentence"){
-								var sentence = "\"..." + data[d][i][p] + "\" " + sentenceWeight;
-								$('#' + id + ' .docBody').append("<div class='neutralDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "'> <i class='fas fa-check' id='" + id + "sentence" + sentenceCount + "check' onclick='checkDocument(this.id)'></i> <i class='fas fa-times' id='" + id + "sentence" + sentenceCount + "X' onclick='invalidateDocument(this.id)'></i>\t<span class='sentenceTxt'>"+ sentence +"</div>");
-								sentenceCount += 1;
-								sentenceWeight = "";
-							}
-							else if(p === "sent_weight"){
-								sentenceWeight = "(" + data[d][i][p] + ")</span><br>";
-							}
-							else if(p === "doc_count"){
-								$('#' + id + ' .docCount').append("<div> Documents in cluster: "+ data[d][i][p] +"</div>");
-								$('#' + id + 'summaryDocCount').append(data[d][i][p] + " docs (<i class='fas fa-times'> 0</i>)")
-							}
-							
-						}				
-					}
-					// document.getElementById(id + 'VerifyBox').value = getVerifiedClusterData(id);
-				}
+								</div>\
+							</div>";
 
+				$("#homeContainer").append(row);
+				$("#miscCluster").hide();
+				
+			}
 
-
-			} // endfor
-			var screenPercent = 100/numClusters + "%";
-			$('.summary').css('width', screenPercent);
+			appendHomeHtml(data);
+			$("#filler").height($("#header").outerHeight());
+			$("#backCover").height($("#header").outerHeight());
 
 			var stopWords = '{{stop_words}}'.replace(/&#39;/g, "").replace(/{/g, "").replace(/}/g, "");
-			// stopWords.forEach(function(value) {
-			// 	console.log(value);
-			// });
 			if(stopWords !== 'set()'){
 				// var array = stopWords.split(', ');
 				// for(var i = 0; i < array.length; i++){
@@ -429,10 +235,6 @@
 				// }
 				$('#stopWordsRow').append(stopWords);
 			}
-
-			$("#filler").height($("#header").outerHeight());
-			$("#backCover").height($("#header").height());
-			$("#backCover").width($("#container").outerWidth());
 
 			var titleTxt = $('.clusterTitle').html();
 			$('.clusterTitle').blur(function() {
@@ -444,11 +246,329 @@
 			});
 
 
+			function clearDocHtml(){
+				$('#homeTotalDocCount').remove();
+				$('#homeSummaries').empty();
+				$('#homeContainer .clusterData').remove();
+				$('#verifiedNavForm input').remove();
+				$('#invalidNavForm input').remove();
+				$('#homeContainer').empty();
+			}
+
+			function appendVerifiedHtml(data){
+				var numClusters = 0;
+				var totalDocs = 0;
+				for(cluster in data){
+					numClusters += 1;
+					var id = cluster.replace(/\s+/g, '-');
+					var row = "<div class='row clusterData' id='" + id +"'>\
+									<div class='col-md-3'>\
+										<div class='clusterTitle' id='" + id + "Title' contenteditable='true'> \
+												"+ cluster + "\
+										</div>\
+										<div class='wordHeader'>Top Words: \
+										</div>\
+									</div>\
+									<div class='col-md-9'>\
+										<div class='docHeader'>\
+											<div class='docCountV'>\
+											</div>\
+										</div>\
+										<div class='docBody'>\
+										</div>\
+									</div>\
+								</div>";
+
+					$('#verifiedContainer').append(row);
+
+					var wordsList = data[cluster]["top_words"];
+					for(i in wordsList){
+						var word = wordsList[i];
+						if( i === '0' ){
+							var isolatedWord = word.substring(word.indexOf(' '), word.indexOf(' ('));
+							$("#verifiedSummaries").append("<div class='summary'><a href='#" + id + "'>" + cluster + "</a><br>" + isolatedWord + " <div id='" + id + "summaryDocCount'></div>" + "</div>");
+						}
+						$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
+					}
+
+					var sentences = data[cluster]['sentences'];
+					var sentenceCount = 0;
+					$('#' + id + ' .docCountV').append("Documents in cluster: "+ sentences.length);
+					$('#verifiedSummaries #' + id + 'summaryDocCount').append(sentences.length + " docs");
+					for(i in sentences){
+						var s = sentences[i];
+						var sentence = "\"..." + s.substring(0, s.lastIndexOf('(')-1) + "\" " + s.substring(s.lastIndexOf('('));
+						$('#' + id + ' .docBody').append("<div class='goodDoc' id='" + id + "sentence" + sentenceCount + "' onclick='markDocument(this.id)'> <input type='checkbox' id ='" + id + "sentence" + sentenceCount +"VerifyBox'>\t<span class='sentenceTxt'>"+ sentence +"</div>");
+						totalDocs += 1;
+						sentenceCount += 1;
+					}
+
+				} //endfor
+				$('#pageTitle').append("<span id='verTotalDocCount'> Total Document Count: " + totalDocs + "</span>");
+
+				var screenPercent;
+				if(numClusters < 2){
+					screenPercent = "25%"
+				}
+				else{
+					screenPercent = 100/numClusters + "%";
+				}
+				$('.summary').css('width', screenPercent);
+
+			}
+
+
+			function appendInvalidData(data){
+				var sentenceCount = 0;
+				for(d in data){
+					console.log(d);
+					var totalDocs = d.substring(0, d.indexOf(" docs"));
+					$('#pageTitle').append("<span id='invTotalDocCount'> Total Document Count: " + totalDocs + "</span>");
+
+					// var element = document.getElementById('totalDocCount').outerHTML;
+					var row = "<div class='row' >\
+									<div class='col-md-12 clusterData'> \
+									</div> \
+								</div>";
+					$("#invalidContainer").append(row);
+
+					for(var i = 0; i<data[d].length; i++){
+						console.log(data[d][i]);
+						var s = data[d][i];
+						var sentence = "\"..." + s.substring(0, s.lastIndexOf('(')) + "\" " + s.substring(s.lastIndexOf('('));
+						$('#invalidContainer .clusterData').append("<div class='badDoc' id='sentence" + sentenceCount + "' onclick='markDocument(this.id)'> <input type='checkbox' id ='sentence" + sentenceCount +"VerifyBox'>\t<span class='sentenceTxt'>"+ sentence +"</div>");
+						sentenceCount += 1;
+					}					
+				}
+
+
+			}
+
+
+			function aggregateDocsForReclustering(){
+				$("#form input[name='docs']").remove();
+				var remainingDocs = document.getElementById('homeContainer').querySelectorAll('.goodDoc,.neutralDoc,.badDoc');
+				for(var i = 0; i < remainingDocs.length; i++){
+					var docText = remainingDocs[i].getElementsByClassName('sentenceTxt')[0].innerText;
+					var txt = docText.replace(/[^A-Za-z-\s]/g,"").replace(/\s{2,}/g, " ");
+					$('#form').append("<input type='hidden' name='docs' value='" + txt + "'>");
+				}
+				
+			}
+
+			$(function(){
+				$('#recalcBtn').click(function(){
+					// var user = $('#txtUsername').val();
+					// var pass = $('#txtPassword').val();
+					aggregateDocsForReclustering();
+					$.ajax({
+						url: '/recluster',
+						data: $('#form').serialize(),
+						type: 'POST',
+						success: function(response){
+							console.log(response);
+							var d = JSON.parse(JSON.stringify(response));
+							var data = jQuery.parseJSON( d );
+							clearDocHtml();
+							appendHomeHtml(data);
+						},
+						error: function(error){
+							console.log(error);
+						}
+					});
+				});
+
+				$('#recalcNewSeedBtn').click(function(){
+					// var user = $('#txtUsername').val();
+					// var pass = $('#txtPassword').val();
+					aggregateDocsForReclustering();
+					$.ajax({
+						url: '/reclusterNewSeed',
+						data: $('#form').serialize(),
+						type: 'POST',
+						success: function(response){
+							console.log(response);
+							var d = JSON.parse(JSON.stringify(response));
+							var data = jQuery.parseJSON( d );
+							clearDocHtml();
+							appendHomeHtml(data);
+						},
+						error: function(error){
+							console.log(error);
+						}
+					});
+				});
+
+				$('#homeNavForm').click(function(){
+					// var user = $('#txtUsername').val();
+					// var pass = $('#txtPassword').val();
+						$("#homeContainer").show();
+						$("#homeTotalDocCount").show();
+						$("#homeSummaries").show();
+						$("#verifiedContainer").hide();
+						$("#verTotalDocCount").hide();
+						$("#verifiedSummaries").hide();
+						$("#invalidContainer").hide();
+						$("#invTotalDocCount").hide();
+						$("#invalidSummaries").hide();
+				});
+
+				$('#verifiedNavForm').click(function(){
+					// var user = $('#txtUsername').val();
+					// var pass = $('#txtPassword').val();
+					// $.ajax({
+					// 	url: '/verified',
+					// 	data: $('#verifiedNavForm').serialize(),
+					// 	type: 'POST',
+					// 	success: function(response){
+					// 		var d = JSON.parse(JSON.stringify(response));
+					// 		var data = jQuery.parseJSON( d );
+					// 		$("#homeContainer").hide();
+					// 		$("#homeTotalDocCount").hide();
+					// 		$("#homeSummaries").hide();
+					// 		$("#invalidContainer").hide();
+					// 		$("#invTotalDocCount").hide();
+					// 		$("#invalidSummaries").hide();
+					// 		appendVerifiedHtml(data);
+					// 		$("#verifiedContainer").show();
+					// 		$("#verTotalDocCount").show();
+					// 		$("#verifiedSummaries").show();
+					// 	},
+					// 	error: function(error){
+					// 		console.log(error);
+					// 	}
+					// });
+
+					$("#homeContainer").hide();
+					$("#homeTotalDocCount").hide();
+					$("#homeSummaries").hide();
+					$("#invalidContainer").hide();
+					$("#invTotalDocCount").hide();
+					$("#invalidSummaries").hide();
+					// appendVerifiedHtml(data);
+					$("#verifiedContainer").show();
+					$("#verifiedContainer").find('*').show();
+					$("#verTotalDocCount").show();
+					$("#verifiedSummaries").show();
+				});
+	
+				// $('#invalidNavForm').click(function(){
+				// 	// var user = $('#txtUsername').val();
+				// 	// var pass = $('#txtPassword').val();
+				// 	$.ajax({
+				// 		url: '/invalids',
+				// 		data: $('#invalidNavForm').serialize(),
+				// 		type: 'POST',
+				// 		success: function(response){
+				// 			console.log(response);
+				// 			var d = JSON.parse(JSON.stringify(response));
+				// 			var data = jQuery.parseJSON( d );
+				// 			$("#homeContainer").hide();
+				// 			$("#homeTotalDocCount").hide();
+				// 			$("#homeSummaries").hide();
+				// 			$("#verifiedContainer").hide();
+				// 			$("#verTotalDocCount").hide();
+				// 			$("#verifiedSummaries").hide();
+				// 			appendInvalidData(data);
+				// 			$("#invalidContainer").show();
+				// 			$("#invTotalDocCount").show();
+				// 			$("#invalidSummaries").show();
+				// 		},
+				// 		error: function(error){
+				// 			console.log(error);
+				// 		}
+				// 	});
+				// });
+			});
+
 		})
 		
 	</script>
 
-	<div class="container" id = "pageContainer">
+	<div class="container">
+		<div id="menu">
+			<div id='header'> 
+						<div class='row' id='topRow'> 
+							<div class='col-md-9'> 
+								<div id='pageTitle'> 
+									<h3> K-Means Text Clustering </h3> 
+									<i class='fas fa-question-circle' onclick='showHowTo()'></i> <br>
+								</div> 
+							</div> 
+							<div class='col-md-1'> 
+								<form action='{{ url_for('index') }}' method='post'>
+									<button class='navBtn' name='homeBtn' id='homeBtn' type='submit'> 
+										<i class='fas fa-home fa-3x'></i>
+									</button> 
+								</form>
+							</div>
+							<div class='col-md-1'> 
+								<form id='verifiedNavForm'>
+									<button class='navBtn' name='verifyBtn' id='verifyBtn' type='button'> 
+										<i class='fas fa-check fa-3x' id='navCheckIcon'></i> 
+									</button> 
+								</form>
+							</div>
+							<div class='col-md-1'> 
+								<form id='invalidNavForm'>
+									<button class='navBtn' name='invalidBtn' id='invalidBtn' type='button'> 
+										<i class='fas fa-times fa-3x' id='navXIcon'></i> 
+									</button> 
+								</form>
+							</div>
+						</div> 
+						<div class='row'> 
+							<div class='col-md-12'> 
+								<form id='form' name='stopwordInput'>
+									Add Stop Word: 
+									<input type='text' class='textbox' name='addStopword'> 
+									Remove Stop Word: 
+									<input type='text' class='textbox' name='removeStopword'> 
+									Number of Clusters: 
+									<input type='text' class='textbox' name='k'> 
+									N Top Words: 
+									<input type='text' class='textbox' name='nTopWords'> 
+									<br> 
+									<button class='reclusterBtn' id='recalcNewSeedBtn' name='reclusterBtn' type='button' value='recalcDiffSeed'> 
+										Recalculate with New Seed 
+									</button> 
+									<button class='reclusterBtn' id='recalcBtn' name='reclusterBtn' type='button' value='recalcSameSeed'> 
+										Recalculate 
+									</button> 
+								</form>
+								<br> 
+							</div> 
+						</div> 
+						<div class='row'> 
+							<div class='col-md-12' id='stopWordsRow'> 
+							</div> 
+						</div> 
+						<div class='row'> 
+							<div class='col-md-12' id='clusterSummaries'> 
+								<div> 
+									Overview: 
+									<div id='homeSummaries'> 
+									</div> 
+									<div id='verifiedSummaries'> 
+									</div> 
+									<div id='invalidSummaries'> 
+									</div> 
+								</div> 
+							</div> 
+						</div> 
+						</div> 
+						<div id='backCover'> 
+						</div> 
+						<div id='filler'> 
+						</div>
+
+		</div>
+		<div id="homeContainer">
+		</div>
+		<div id="verifiedContainer">
+		</div>
+		<div id="invalidContainer">
+		</div>
 	</div>
 </body>
 

@@ -1,0 +1,97 @@
+[contenteditable] { padding: 5px; outline: 0px solid transparent; border-radius: 3px; }
+[contenteditable]:not(:focus) { border: 2px dashed #ddd; }
+[contenteditable]:hover { border: 2px solid #51a7e8; box-shadow: inset 0 2px 2px rgba(0,0,0,0.075),0 0 5px rgba(81,167,232,0.5); }
+#backCover{
+	position: fixed;
+	background: rgba(255,255,255, 1);
+	width: 100%;
+	z-index: 500;
+	left: 0px;
+}
+.badDoc{
+	color: rgba(169, 169, 169, 0.8);
+}
+button{
+	margin: 10;
+	float: right;
+}
+.clusterData{
+    border-bottom: 1px solid black;
+    padding: 10 10;
+}
+#clusterSummaries{
+	border-bottom: 1px solid black;
+	padding: 10 10;
+}
+.clusterTitle{
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5;
+}
+.docBody{
+	overflow-y: scroll;
+	height: 200px;"
+}
+.docCount{
+	float: left;
+	width: 75%;
+}
+.fa-check{
+	color: green;
+}
+.fa-question-circle {
+	cursor: pointer;
+}
+.fa-times{
+	color: red;
+}
+.goodDoc{
+	color: green;
+}
+.goodDoc, .badDoc, .neutralDoc{
+	cursor: pointer;
+	margin-bottom: 20;
+}
+h3{
+	display: inline-block;
+}
+#header{
+	position: fixed;
+	display: block;
+	background: rgba(255,255,255, 1);
+	z-index: 999;
+}
+#miscsummaryDocCount{
+	color: red;
+}
+.navBtn{
+	border: none;
+}
+.summary{
+	float: left;
+	text-align: center;
+}
+.summary mark{
+	background-color: rgba(37,101,222,0.6) !important;
+}
+.textBox{
+	width: 140px;
+}
+#topRow{
+	padding-top: 10;
+}
+#pageTitle{
+	font-size: 1.25rem;
+	margin-bottom: 10;
+}
+/*	.verify{
+	float: right;
+}*/
+.wordHeader, .docHeader{
+	font-size: 1.25rem;
+    margin-bottom: 10;
+}
+/*
+input[type='checkbox']{
+	padding-bottom: : 0.5rem;
+}*/

@@ -20,13 +20,28 @@ def index():
 		home_clusters = json_coms_categorizer.run()
 	return render_template('coms_clusters.html', clusters=home_clusters)
 
+# @app.route('/test', methods=['GET', 'POST'])
+# def test():
+# 	global true_k
+# 	global n_top_words
+
+# 	inputs = dict(request.form)
+
+# 	new_stop_word = inputs['addStopword']
+# 	new_k = inputs['k']
+
+# 	return json.dumps({'status':'OK','stop_word': new_stop_word,'k':new_k})
+
 @app.route('/recluster', methods=['POST'])
 def recluster():
 	global true_k
 	global n_top_words
 
 	inputs = dict(request.form)
+	clusters = dict()
+	docs = inputs['docs']
 
+	print(inputs)
 	addStopwordInput = inputs['addStopword'][0]
 	if not addStopwordInput == "":
 		print("added stop word: " + addStopwordInput)
@@ -47,23 +62,61 @@ def recluster():
 		n_top_words = n_top_words_input
 		print("new n: " + str(n_top_words))
 
-	print("list: " + str(stop_words_list))
-	if 'reclusterBtn' in request.form:
-		if request.form['reclusterBtn'] == 'recalcDiffSeed':
-			json_coms_categorizer.new_seed()
-		clusters = json_coms_categorizer.run(k=true_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
-	elif 'reclusterBadBtn' in request.form:
-		json_coms_categorizer.new_seed()
-		doc_str = request.form['reclusterBadBtn']
-		docs = list(doc_str.splitlines())
-		temp_k = true_k
-		while len(docs) <= temp_k*3:
-			temp_k -= 1
-			if temp_k == 0:
-				return render_template('coms_clusters.html', alert='Too few documents to cluster.')
-		clusters = json_coms_categorizer.run(doc_source=docs, k=temp_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
 
-	return render_template('coms_clusters.html', clusters=clusters, stop_words=stop_words_list)
+	# if 'reclusterBtn' in request.form:
+	# 	if request.form['reclusterBtn'] == 'recalcDiffSeed':
+	# 		json_coms_categorizer.new_seed()
+	# 	clusters = json_coms_categorizer.run(k=true_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+	# elif 'reclusterBadBtn' in request.form:
+	# 	json_coms_categorizer.new_seed()
+	# 	doc_str = request.form['reclusterBadBtn']
+	# 	docs = list(doc_str.splitlines())
+	# 	temp_k = true_k
+	# 	while len(docs) <= temp_k*3 and temp_k > 1:
+	# 		temp_k -= 1
+			# if temp_k == 0:
+			# 	return render_template('coms_clusters.html', alert='Too few documents to cluster.')
+		# clusters = json_coms_categorizer.run(doc_source=docs, k=temp_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+
+	# return render_template('coms_clusters.html', clusters=clusters, stop_words=stop_words_list)
+	clusters = json_coms_categorizer.run(doc_source=docs, k=true_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+
+	return json.dumps(clusters)
+
+@app.route('/reclusterNewSeed', methods=['POST'])
+def recluster_new_seed():
+	global true_k
+	global n_top_words
+
+	inputs = dict(request.form)
+	clusters = dict()
+	docs = inputs['docs']
+
+	print(inputs)
+	addStopwordInput = inputs['addStopword'][0]
+	if not addStopwordInput == "":
+		print("added stop word: " + addStopwordInput)
+		stop_words_list.add(addStopwordInput)
+
+	removeStopwordInput = inputs['removeStopword'][0]
+	if not removeStopwordInput == "" and removeStopwordInput in stop_words_list:
+		print("removed stop word: " + removeStopwordInput)
+		stop_words_list.remove(removeStopwordInput)
+
+	if not inputs['k'][0] == "":
+		k_input = int(inputs['k'][0])
+		true_k = k_input
+		print("new k: " + str(true_k))
+
+	if not inputs['nTopWords'][0] == "":
+		n_top_words_input = int(inputs['nTopWords'][0])
+		n_top_words = n_top_words_input
+		print("new n: " + str(n_top_words))
+
+	json_coms_categorizer.new_seed()
+	clusters = json_coms_categorizer.run(doc_source=docs, k=true_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+
+	return json.dumps(clusters)
 
 @app.route('/recluster_valid', methods=['POST'])
 def recluster_valid():
@@ -234,37 +287,36 @@ def recluster_invalid():
 def verified():
 	verified_clusters = dict()
 	inputs = dict(request.form)
-	if len(inputs) > 1:
-		inputs.pop('verifyBtn', None)
-		for key, value in inputs.items():
-			data_str = value[0]
-			data_arr = data_str.splitlines()
 
-			cluster_data = dict()
+	for key, value in inputs.items():
+		data_str = value[0]
+		data_arr = data_str.splitlines()
 
-			top_words = list()
-			for i in range(1, n_top_words + 1):
-				top_words.append(data_arr[i])
-			cluster_data['top_words'] = top_words
+		cluster_data = dict()
 
-			sentences = list()
-			for i in range(n_top_words + 1, len(data_arr)):
-				sentences.append(data_arr[i])
-			cluster_data['sentences'] = sentences
+		top_words = list()
+		for i in range(1, n_top_words + 1):
+			top_words.append(data_arr[i])
+		cluster_data['top_words'] = top_words
 
-			verified_clusters[data_arr[0]] = cluster_data
+		sentences = list()
+		for i in range(n_top_words + 1, len(data_arr)):
+			sentences.append(data_arr[i])
+		cluster_data['sentences'] = sentences
 
-	return render_template('verified_clusters.html', clusters=verified_clusters)
+		verified_clusters[data_arr[0]] = cluster_data
+
+	print(verified_clusters)
+
+	return json.dumps(verified_clusters)
 
 @app.route('/invalids', methods=['POST'])
 def invalids():
 	invalid_docs = set()
 	inputs = dict(request.form)
-	if len(inputs) > 1:
-		inputs.pop('invalidBtn', None)
-		for cluster, doc_list in inputs.items():
-			for doc in doc_list:
-				invalid_docs.add(doc)
+	for cluster, doc_list in inputs.items():
+		for doc in doc_list:
+			invalid_docs.add(doc)
 
 	invalid_json = dict()
 	invalid_json[str(len(invalid_docs)) + ' docs'] = list(invalid_docs)
@@ -290,7 +342,8 @@ def invalids():
 
 	# 		verified_clusters[data_arr[0]] = cluster_data
 
-	return render_template('invalid_docs.html', data=invalid_json)
+	# return render_template('invalid_docs.html', data=invalid_json)
+	return json.dumps(invalid_json)
 
 if __name__ == '__main__':
 	app.run(debug=True,host='0.0.0.0', port=5000)
