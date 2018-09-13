@@ -67,6 +67,15 @@ h3{
 .navBtn{
 	border: none;
 }
+.stopword{
+	padding: 2px;
+}
+.stopword:hover{
+	cursor: pointer;
+	border: 1px dotted red;
+	box-shadow: 1px 1px 3px 3px red;
+	border-radius: 5px;
+}
 .summary{
 	float: left;
 	text-align: center;

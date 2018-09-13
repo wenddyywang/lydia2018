@@ -18,6 +18,7 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="../static/styles.css" />
+
 	<script type="text/javascript" src="../static/script.js"></script>
 
 </head>
@@ -33,19 +34,29 @@
 			// 	alert(warning);
 			// }
 			$("verifiedContainer").hide();
-			$("invalidContainer").hide();
 
 			$("#verifiedSummaries").hide();
-			$("#invalidSummaries").hide();
 
 			var d = JSON.parse(JSON.stringify('{{ clusters | tojson }}'));
 			var data = jQuery.parseJSON( d );
+
+
 
 			function appendHomeHtml(data){
 				var numClusters = 0;
 				for(d in data){
 					if(d === "Document count"){
-						$('#pageTitle').append("<span id='homeTotalDocCount'> Total Document Count: " + data[d] + "</span>");
+						$('#pageTitle').append("<span id='homeTotalDocCount'> Total Document Count: " + data[d] + " (Remaining: <span id='homeNumDocsRemaining'></span>)</span>");
+					}
+					else if(d === "Stopwords"){
+						$('#stopWordsRow').empty();
+						console.log(data[d].length);
+						for(var i = 0; i<data[d].length; i++){
+							// $('#stopWordsRow').append("<span class='stopword' id='sw_" + data[d][i] + "' value='" + data[d][i] + "'" + data[d][i] +"</span>");	
+							 $('#stopWordsRow').append("<span class='stopword' id='w_" + data[d][i] + "'> " + data[d][i] + " <i class='fa fa-times-circle' aria-hidden='true'></i></span>");
+						}
+						// $('#stopWordsRow').append(data[d].toString());
+						console.log(data[d].toString());
 					}
 					else{
 						var id = d.replace(/\s+/g, '-');
@@ -54,7 +65,7 @@
 						// var element = document.getElementById('pageTitle').outerHTML;
 						var row = "<div class='row clusterData' id='" + id +"'>\
 										<div class='col-md-3'>\
-											<div class='clusterTitle' id='" + id + "Title' contenteditable='true'> \
+											<div class='clusterTitle' id='" + id + "Title' contenteditable='true' > \
 												"+ d + "\
 											</div>\
 											<div class='wordHeader'>Top Words: \
@@ -94,7 +105,7 @@
 								}
 								else if(p === "sentence"){
 									var sentence = "\"..." + data[d][i][p] + "\" " + sentenceWeight;
-									$('#' + id + ' .docBody').append("<div class='neutralDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "'> <i class='fas fa-check' id='" + id + "sentence" + sentenceCount + "check' onclick='checkDocument(this.id)'></i> <i class='fas fa-times' id='" + id + "sentence" + sentenceCount + "X' onclick='invalidateDocument(this.id)'></i>\t<span class='sentenceTxt'>"+ sentence +"</div>");
+									$('#' + id + ' .docBody').append("<div class='neutralDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "'> <i class='fas fa-check fa-2x' id='" + id + "sentence" + sentenceCount + "check' onclick='checkDocument(this.id)'></i> <i class='fas fa-times fa-2x' id='" + id + "sentence" + sentenceCount + "X' onclick='invalidateDocument(this.id)'></i>\t<span class='sentenceTxt'>"+ sentence +"</div>");
 									sentenceCount += 1;
 									sentenceWeight = "";
 								}
@@ -114,6 +125,9 @@
 
 
 				} // endfor
+
+				var numUnverifiedDocs = document.getElementById('homeContainer').getElementsByClassName('sentenceTxt').length;
+				$('#homeNumDocsRemaining').append(numUnverifiedDocs);
 
 				var screenPercent = 100/numClusters + "%";
 				$('#homeSummaries .summary').css('width', screenPercent);
@@ -144,30 +158,39 @@
 				$("#homeContainer").append(row);
 				$("#miscCluster").hide();
 				
-			}
 
-			appendHomeHtml(data);
-			$("#filler").height($("#header").outerHeight());
-			$("#backCover").height($("#header").outerHeight());
-
-			var stopWords = '{{stop_words}}'.replace(/&#39;/g, "").replace(/{/g, "").replace(/}/g, "");
-			if(stopWords !== 'set()'){
-				// var array = stopWords.split(', ');
-				// for(var i = 0; i < array.length; i++){
-				// 	$('#stopWordsRow').append("<span id='" + array[i] + "_stopword' onclick=this.remove()>" + array[i] + "</span>");
-				// }
-				$('#stopWordsRow').append(stopWords);
-			}
-
-			var titleTxt = $('.clusterTitle').html();
+			var titleTxt = $('.clusterTitle').html();	
+					
 			$('.clusterTitle').blur(function() {
-				if (titleTxt!=$(this).html()){
-			        titleTxt = $(this).html();
+				//var titleTxt = $('.clusterTitle').html();				
+				var oldText = titleTxt
+				var currentText = $(this).html()
+				//if the current text is different from the old text, then
+				//if(true){
+				if (titleTxt!=currentText){
+					//set the titleTxt to the current text
+			        titleTxt = currentText
 			        var id = this.id + "Summary";
 			        $('#' + id).text(titleTxt);
 			    }
 			});
+			}
 
+			appendHomeHtml(data);
+
+
+			$("#filler").height($("#header").outerHeight());
+			$("#backCover").height($("#header").outerHeight());
+
+			// var stopWords = '{{stop_words}}'.replace(/&#39;/g, "").replace(/{/g, "").replace(/}/g, "");
+			// if(stopWords !== 'set()'){
+			// 	// var array = stopWords.split(', ');
+			// 	// for(var i = 0; i < array.length; i++){
+			// 	// 	$('#stopWordsRow').append("<span id='" + array[i] + "_stopword' onclick=this.remove()>" + array[i] + "</span>");
+			// 	// }
+			// 	$('#stopWordsRow').append(stopWords);
+			// 	console.log(stopWords);
+			// }
 
 			function clearDocHtml(){
 				$('#homeTotalDocCount').remove();
@@ -176,6 +199,7 @@
 				$('#verifiedNavForm input').remove();
 				$('#invalidNavForm input').remove();
 				$('#homeContainer').empty();
+				$('.textbox').val('');
 			}
 
 			function appendVerifiedHtml(data){
@@ -251,78 +275,75 @@
 				
 			}
 
-			$(function(){
-				$('#recalcBtn').click(function(){
-					// var user = $('#txtUsername').val();
-					// var pass = $('#txtPassword').val();
-					aggregateDocsForReclustering();
-					$.ajax({
-						url: '/recluster',
-						data: $('#form').serialize(),
-						type: 'POST',
-						success: function(response){
-							console.log(response);
-							var d = JSON.parse(JSON.stringify(response));
-							var data = jQuery.parseJSON( d );
-							clearDocHtml();
-							appendHomeHtml(data);
-						},
-						error: function(error){
-							console.log(error);
-						}
-					});
-				});
-
-				$('#recalcNewSeedBtn').click(function(){
-					// var user = $('#txtUsername').val();
-					// var pass = $('#txtPassword').val();
-					aggregateDocsForReclustering();
-					$.ajax({
-						url: '/reclusterNewSeed',
-						data: $('#form').serialize(),
-						type: 'POST',
-						success: function(response){
-							console.log(response);
-							var d = JSON.parse(JSON.stringify(response));
-							var data = jQuery.parseJSON( d );
-							clearDocHtml();
-							appendHomeHtml(data);
-						},
-						error: function(error){
-							console.log(error);
-						}
-					});
-				});
-
-				$('#homeNavForm').click(function(){
-					// var user = $('#txtUsername').val();
-					// var pass = $('#txtPassword').val();
-						$("#homeContainer").show();
-						$("#homeTotalDocCount").show();
-						$("#homeSummaries").show();
-						$("#verifiedContainer").hide();
-						$("#verTotalDocCount").hide();
-						$("#verifiedSummaries").hide();
-						$("#invalidContainer").hide();
-						$("#invTotalDocCount").hide();
-						$("#invalidSummaries").hide();
-				});
-
-				$('#verifiedNavForm').click(function(){
-					$("#homeContainer").hide();
-					$("#homeTotalDocCount").hide();
-					$("#homeSummaries").hide();
-					$("#invalidContainer").hide();
-					$("#invTotalDocCount").hide();
-					$("#invalidSummaries").hide();
-					// appendVerifiedHtml(data);
-					$("#verifiedContainer").show();
-					$("#verifiedContainer").find('*').show();
-					$("#verTotalDocCount").show();
-					$("#verifiedSummaries").show();
-				});
-	
+			$('.stopword').click(function(){
+				$('#form').append("<input type='hidden' name='removedStopWord' value='" + $(this).text().trim() + "'>")
+				$(this).remove()
 			});
+
+			//$(function(){
+			$('#recalcBtn').click(function(){
+				// var user = $('#txtUsername').val();
+				// var pass = $('#txtPassword').val();
+				aggregateDocsForReclustering();
+				$.ajax({
+					url: '/recluster',
+					data: $('#form').serialize(),
+					type: 'POST',
+					success: function(response){
+						var d = JSON.parse(JSON.stringify(response));
+						var data = jQuery.parseJSON( d );
+						clearDocHtml();
+						appendHomeHtml(data);
+					},
+					error: function(error){
+						console.log(error);
+					}
+				});
+			});
+
+			$('#recalcNewSeedBtn').click(function(){
+				// var user = $('#txtUsername').val();
+				// var pass = $('#txtPassword').val();
+				aggregateDocsForReclustering();
+				$.ajax({
+					url: '/reclusterNewSeed',
+					data: $('#form').serialize(),
+					type: 'POST',
+					success: function(response){
+						var d = JSON.parse(JSON.stringify(response));
+						var data = jQuery.parseJSON( d );
+						clearDocHtml();
+						appendHomeHtml(data);
+					},
+					error: function(error){
+						console.log(error);
+					}
+				});
+			});
+
+			$('#homeNavForm').click(function(){
+				// var user = $('#txtUsername').val();
+				// var pass = $('#txtPassword').val();
+					$("#homeContainer").show();
+					$("#homeTotalDocCount").show();
+					$("#homeSummaries").show();
+					$("#verifiedContainer").hide();
+					$("#verTotalDocCount").hide();
+					$("#verifiedSummaries").hide();
+			});
+
+			$('#verifiedNavForm').click(function(){
+				$("#homeContainer").hide();
+				$("#homeTotalDocCount").hide();
+				$("#homeSummaries").hide();
+				// appendVerifiedHtml(data);
+				$("#verifiedContainer").show();
+				$("#verifiedContainer").find('*').show();
+				$("#verTotalDocCount").show();
+				$("#verifiedSummaries").show();
+			});
+	
+			//});
 
 		})
 		
@@ -387,8 +408,6 @@
 									</div> 
 									<div id='verifiedSummaries'> 
 									</div> 
-									<div id='invalidSummaries'> 
-									</div> 
 								</div> 
 							</div> 
 						</div> 
@@ -402,8 +421,6 @@
 		<div id="homeContainer">
 		</div>
 		<div id="verifiedContainer">
-		</div>
-		<div id="invalidContainer">
 		</div>
 	</div>
 </body>

@@ -14,6 +14,7 @@ home_clusters = dict()
 @app.route('/', methods=['GET', 'POST'])
 def index():
 	global home_clusters
+	global stop_words_list
 
 	stop_words_list = set()
 	if not home_clusters:
@@ -41,7 +42,6 @@ def recluster():
 	clusters = dict()
 	docs = inputs['docs']
 
-	print(inputs)
 	addStopwordInput = inputs['addStopword'][0]
 	if not addStopwordInput == "":
 		print("added stop word: " + addStopwordInput)
@@ -92,7 +92,6 @@ def recluster_new_seed():
 	clusters = dict()
 	docs = inputs['docs']
 
-	print(inputs)
 	addStopwordInput = inputs['addStopword'][0]
 	if not addStopwordInput == "":
 		print("added stop word: " + addStopwordInput)
@@ -118,81 +117,81 @@ def recluster_new_seed():
 
 	return json.dumps(clusters)
 
-@app.route('/recluster_valid', methods=['POST'])
-def recluster_valid():
-	global true_k
-	global n_top_words
+# @app.route('/recluster_valid', methods=['POST'])
+# def recluster_valid():
+# 	global true_k
+# 	global n_top_words
 
-	inputs = dict(request.form)
-	v_n_top_words = n_top_words
-	docs = inputs['docs']
-	v_k = int(inputs['numClusters'][0])
+# 	inputs = dict(request.form)
+# 	v_n_top_words = n_top_words
+# 	docs = inputs['docs']
+# 	v_k = int(inputs['numClusters'][0])
 
-	warning = ""
+# 	warning = ""
 
-	addStopwordInput = inputs['addStopword'][0]
-	if not addStopwordInput == "":
-		print("added stop word: " + addStopwordInput)
-		stop_words_list.add(addStopwordInput)
+# 	addStopwordInput = inputs['addStopword'][0]
+# 	if not addStopwordInput == "":
+# 		print("added stop word: " + addStopwordInput)
+# 		stop_words_list.add(addStopwordInput)
 
-	removeStopwordInput = inputs['removeStopword'][0]
-	if not removeStopwordInput == "" and removeStopwordInput in stop_words_list:
-		print("removed stop word: " + removeStopwordInput)
-		stop_words_list.remove(removeStopwordInput)
+# 	removeStopwordInput = inputs['removeStopword'][0]
+# 	if not removeStopwordInput == "" and removeStopwordInput in stop_words_list:
+# 		print("removed stop word: " + removeStopwordInput)
+# 		stop_words_list.remove(removeStopwordInput)
 
-	if not inputs['k'][0] == "":
-		k_input = int(inputs['k'][0])
-		if k_input > len(docs):
-			warning = "Number of clusters must be less than total number of documents."
-		else:
-			v_k = k_input
-			print("new k: " + str(true_k))
+# 	if not inputs['k'][0] == "":
+# 		k_input = int(inputs['k'][0])
+# 		if k_input > len(docs):
+# 			warning = "Number of clusters must be less than total number of documents."
+# 		else:
+# 			v_k = k_input
+# 			print("new k: " + str(true_k))
 
-	if not inputs['nTopWords'][0] == "":
-		n_top_words_input = int(inputs['nTopWords'][0])
-		v_n_top_words = n_top_words_input
-		print("new n: " + str(v_n_top_words))
+# 	if not inputs['nTopWords'][0] == "":
+# 		n_top_words_input = int(inputs['nTopWords'][0])
+# 		v_n_top_words = n_top_words_input
+# 		print("new n: " + str(v_n_top_words))
 
-	print("list: " + str(stop_words_list))
+# 	print("list: " + str(stop_words_list))
 
-	if 'reclusterBtn' in request.form:
-		if request.form['reclusterBtn'] == 'recalcDiffSeed':
-			json_coms_categorizer.new_seed()
-		clusters = json_coms_categorizer.run(doc_source=docs, k=v_k, n=v_n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+# 	if 'reclusterBtn' in request.form:
+# 		if request.form['reclusterBtn'] == 'recalcDiffSeed':
+# 			json_coms_categorizer.new_seed()
+# 		clusters = json_coms_categorizer.run(doc_source=docs, k=v_k, n=v_n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
 
-		recalculated_clusters = dict();
+# 		recalculated_clusters = dict();
 
-		clusters.pop('Document count', None)
-		for cluster in clusters:
-			cluster_dict = clusters[cluster]
-			word_counter = 1
-			words_list = list()
-			sentence_list = list()
-			for d in cluster_dict:
-				one_word = ""
-				one_sentence = ""
-				for key, val in d.items():
-					if key == 'word':
-						one_word += str(word_counter) + ". <b>" + val + "</b> "
-						word_counter += 1
-					elif key == 'word_weight':
-						one_word += "(" + val + ") <br>"
-						words_list.append(one_word)
-						one_word = ""
-					elif key == 'sentence':
-						one_sentence += val
-					elif key == 'sent_weight':
-						one_sentence += " (" + val + ')'
-						sentence_list.append(one_sentence)
-						one_sentence = ""
-			sub_dict = dict()
-			sub_dict['top_words'] = words_list
-			sub_dict['sentences'] = sentence_list
-			recalculated_clusters[cluster] = sub_dict
-	if warning:
-		return render_template('verified_clusters.html', clusters=recalculated_clusters, stop_words=stop_words_list, alert=warning)
-	else:
-		return render_template('verified_clusters.html', clusters=recalculated_clusters, stop_words=stop_words_list)
+# 		clusters.pop('Document count', None)
+# 		for cluster in clusters:
+# 			cluster_dict = clusters[cluster]
+# 			word_counter = 1
+# 			words_list = list()
+# 			sentence_list = list()
+# 			for d in cluster_dict:
+# 				one_word = ""
+# 				one_sentence = ""
+# 				for key, val in d.items():
+# 					if key == 'word':
+# 						one_word += str(word_counter) + ". <b>" + val + "</b> "
+# 						word_counter += 1
+# 					elif key == 'word_weight':
+# 						one_word += "(" + val + ") <br>"
+# 						words_list.append(one_word)
+# 						one_word = ""
+# 					elif key == 'sentence':
+# 						one_sentence += val
+# 					elif key == 'sent_weight':
+# 						one_sentence += " (" + val + ')'
+# 						sentence_list.append(one_sentence)
+# 						one_sentence = ""
+# 			sub_dict = dict()
+# 			sub_dict['top_words'] = words_list
+# 			sub_dict['sentences'] = sentence_list
+# 			recalculated_clusters[cluster] = sub_dict
+# 	if warning:
+# 		return render_template('verified_clusters.html', clusters=recalculated_clusters, stop_words=stop_words_list, alert=warning)
+# 	else:
+# 		return render_template('verified_clusters.html', clusters=recalculated_clusters, stop_words=stop_words_list)
 
 @app.route('/recluster_invalid', methods=['POST'])
 def recluster_invalid():

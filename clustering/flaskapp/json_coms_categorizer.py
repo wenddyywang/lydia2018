@@ -281,6 +281,7 @@ def append_mark_tag(sentence, keys, token_dict, highlight_colors):
 def sort_clusters_by_weight(data):
     sorted_data = {}
     sorted_data['Document count'] = data['Document count']
+    sorted_data['Stopwords'] = data['Stopwords']
     cluster_to_weight = dict()
     for i in range(true_k):
         cluster_to_weight['Cluster %d' % i] = float(data['Cluster %d' % i][0]['word_weight'])
@@ -303,11 +304,14 @@ def get_top_words(k, sorted_terms):
     return top_words
 '''
 stop_words = read_stop_words("stopwords.csv")
+user_in_stop_words = list()
 rand_int = random.randint(0, 1000)
 true_k = 5
 num_top_words = 7
 opacity = str(.8)
 # doc_source = "COMS4170Insight.txt"
+
+print(str(user_in_stop_words) + " in script")
 
 def new_seed():
     global rand_int
@@ -319,13 +323,18 @@ def run(doc_source='COMS4170Insight.txt', k=5, n=7, added_stop_word="", removed_
     true_k = k
     global num_top_words
     num_top_words = n
+    global user_in_stop_words
 
     if not added_stop_word == "":
-        print("added " + added_stop_word)
+        print("added " + added_stop_word + " in script")
         add_stop_word(added_stop_word)
+        if added_stop_word not in user_in_stop_words:
+            user_in_stop_words.append(added_stop_word)
     if not removed_stop_word == "":
-        print("removed " + removed_stop_word)
+        print("removed " + removed_stop_word + " in script")
         remove_stop_word(removed_stop_word)
+        if added_stop_word in user_in_stop_words:
+            user_in_stop_words.remove(added_stop_word)
 
     if isinstance(doc_source, str):
         raw_docs = read_documents(doc_source)
@@ -388,6 +397,7 @@ def run(doc_source='COMS4170Insight.txt', k=5, n=7, added_stop_word="", removed_
 
     #WRITE TO JSON FILE
     data['Document count'] = len(documents)
+    data['Stopwords'] = user_in_stop_words
     for i in range(true_k):
         #print("Cluster %d:" % i)
         data['Cluster %d' % i] = []

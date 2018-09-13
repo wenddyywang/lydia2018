@@ -5,7 +5,6 @@ function markValid(boxId) {
     var summaryTitle = titleId + 'Summary';
     if ( box.checked ) {
     	var data = getVerifiedClusterData(clusterId);
-    	box.nextSibling.textContent = "\t Verified";
         document.getElementById(titleId).style.color = "#228B22";
         $('#verifiedNavForm').append("<input type='hidden' id=\"" + clusterId + "data\" name=\"" + clusterId + "\" value=\"" + data + "\">")
         // bounce('#navCheckIcon');
@@ -41,10 +40,13 @@ function markValid(boxId) {
 	        	summary.getElementsByClassName('summaryDocCount')[0].textContent = netNumDocs + " docs";	
 	        }
 	        
-	        $('#verifiedSummaries').append(summary);        	
+	        $('#verifiedSummaries').append(summary);
+
+	        document.getElementById('homeNumDocsRemaining').textContent = document.getElementById('homeContainer').getElementsByClassName('sentenceTxt').length;        	
         });        
 
         document.getElementById(summaryTitle).style.color = "#228B22";
+
 
         // document.getElementById(clusterId).getElementsByClassName("docBody")[0].style.display = "none";
         // var topWords = document.getElementById(clusterId).getElementsByClassName("topWord");
@@ -120,10 +122,14 @@ function invalidateDocument(xId){
 	    								</div>");
 
 	    	var summaries = document.getElementsByClassName('summary');
+	    	for(var i = 0; i<summaries.lenght; i++){
+	    		console.log(summaries[i]);
+	    	}
 	    	var numSummaries = summaries.length;
 	    	if(numSummaries > 0){
 	    		$('#miscSummaryXDiv').height($('.summaryFirstWord').height());
 	    	}
+	    	console.log("num summaries: " + numSummaries);
 	    	var screenPercent = 100/numSummaries + "%";
 			$('#homeSummaries .summary').css('width', screenPercent);
 	    }
@@ -145,6 +151,12 @@ function invalidateDocument(xId){
 	}
 	
 }
+
+
+// function trackRemovedStopWord(swId){
+// 	$('#form').append("<input type='hidden' name='removedStopWord' value='" + document.getElementById(swId).textContent.trim() + "'>");
+// 	$('#' + swId).remove();
+// }
 
 function getVerifiedClusterData(clusterId){
 	var str = "";
