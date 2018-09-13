@@ -304,37 +304,42 @@ def get_top_words(k, sorted_terms):
     return top_words
 '''
 stop_words = read_stop_words("stopwords.csv")
-user_in_stop_words = list()
 rand_int = random.randint(0, 1000)
 true_k = 5
 num_top_words = 7
 opacity = str(.8)
 # doc_source = "COMS4170Insight.txt"
 
-print(str(user_in_stop_words) + " in script")
-
 def new_seed():
     global rand_int
     rand_int = random.randint(0, 1000)
     print("new seed: " + str(rand_int))
 
-def run(doc_source='COMS4170Insight.txt', k=5, n=7, added_stop_word="", removed_stop_word=""):
+def run(doc_source='COMS4170Insight.txt', k=5, n=7, user_in_stop_words=[]):
     global true_k
     true_k = k
     global num_top_words
     num_top_words = n
-    global user_in_stop_words
 
-    if not added_stop_word == "":
-        print("added " + added_stop_word + " in script")
-        add_stop_word(added_stop_word)
-        if added_stop_word not in user_in_stop_words:
-            user_in_stop_words.append(added_stop_word)
-    if not removed_stop_word == "":
-        print("removed " + removed_stop_word + " in script")
-        remove_stop_word(removed_stop_word)
-        if added_stop_word in user_in_stop_words:
-            user_in_stop_words.remove(added_stop_word)
+    # if not added_stop_word == "":
+    #     print("added " + added_stop_word + " in script")
+    #     add_stop_word(added_stop_word)
+    #     if added_stop_word not in user_in_stop_words:
+    #         user_in_stop_words.append(added_stop_word)
+    # if not removed_stop_word == "":
+    #     print("removed " + removed_stop_word + " in script")
+    #     remove_stop_word(removed_stop_word)
+    #     if added_stop_word in user_in_stop_words:
+    #         user_in_stop_words.remove(added_stop_word)
+
+    print(user_in_stop_words)
+
+    temp_stop_words = stop_words
+
+    stemmed_user_in_stop_words = process_documents(user_in_stop_words)
+
+    temp_stop_words.extend(stemmed_user_in_stop_words)
+    print(temp_stop_words)
 
     if isinstance(doc_source, str):
         raw_docs = read_documents(doc_source)
@@ -358,9 +363,9 @@ def run(doc_source='COMS4170Insight.txt', k=5, n=7, added_stop_word="", removed_
     matched_sentences = False
     while not matched_sentences:
         if isinstance(doc_source, str):
-            vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=(1,3), min_df=2)
+            vectorizer = TfidfVectorizer(stop_words=temp_stop_words, ngram_range=(1,3), min_df=2)
         else:
-            vectorizer = TfidfVectorizer(stop_words=stop_words, ngram_range=(1,3))
+            vectorizer = TfidfVectorizer(stop_words=temp_stop_words, ngram_range=(1,3))
         X = vectorizer.fit_transform(documents)
         # true_k = 5
         model = KMeans(n_clusters=true_k, init='k-means++', max_iter=1000, n_init=1, random_state=rand_int)

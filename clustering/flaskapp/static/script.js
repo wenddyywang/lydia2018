@@ -153,10 +153,16 @@ function invalidateDocument(xId){
 }
 
 
-// function trackRemovedStopWord(swId){
-// 	$('#form').append("<input type='hidden' name='removedStopWord' value='" + document.getElementById(swId).textContent.trim() + "'>");
-// 	$('#' + swId).remove();
-// }
+function removeStopword(swId){
+	// $('#form').append("<input type='hidden' name='removedStopWord' value='" + document.getElementById(swId).textContent.trim() + "'>");
+	$('#' + swId).remove();
+	inputTagId = 'w_' + swId.substring(swId.indexOf('_') + 1);
+	console.log(inputTagId);
+	$('#' + inputTagId).remove();
+	$("#filler").height($("#header").outerHeight());
+	console.log("headerheight " + $("#header").outerHeight() + "so new fillerheight should be: " + $('#filler').height());
+	$("#backCover").height($("#header").outerHeight());
+}
 
 function getVerifiedClusterData(clusterId){
 	var str = "";

@@ -6,7 +6,7 @@ from wtforms import StringField
 
 
 app = Flask(__name__)
-stop_words_list = set()
+# stop_words_list = set()
 true_k = json_coms_categorizer.true_k
 n_top_words = json_coms_categorizer.num_top_words
 home_clusters = dict()
@@ -14,9 +14,9 @@ home_clusters = dict()
 @app.route('/', methods=['GET', 'POST'])
 def index():
 	global home_clusters
-	global stop_words_list
+	# global stop_words_list
 
-	stop_words_list = set()
+	# stop_words_list = set()
 	if not home_clusters:
 		home_clusters = json_coms_categorizer.run()
 	return render_template('coms_clusters.html', clusters=home_clusters)
@@ -42,15 +42,21 @@ def recluster():
 	clusters = dict()
 	docs = inputs['docs']
 
-	addStopwordInput = inputs['addStopword'][0]
-	if not addStopwordInput == "":
-		print("added stop word: " + addStopwordInput)
-		stop_words_list.add(addStopwordInput)
+	# addStopwordInput = inputs['addStopword'][0]
+	# if not addStopwordInput == "":
+	# 	print("added stop word: " + addStopwordInput)
+	# 	stop_words_list.add(addStopwordInput)
 
-	removeStopwordInput = inputs['removeStopword'][0]
-	if not removeStopwordInput == "" and removeStopwordInput in stop_words_list:
-		print("removed stop word: " + removeStopwordInput)
-		stop_words_list.remove(removeStopwordInput)
+	# removeStopwordInput = inputs['removeStopword'][0]
+	# if not removeStopwordInput == "" and removeStopwordInput in stop_words_list:
+	# 	print("removed stop word: " + removeStopwordInput)
+	# 	stop_words_list.remove(removeStopwordInput)
+
+	if 'stopword' in inputs:
+		stopwords = inputs['stopword']
+	else:
+		stopwords = []
+
 
 	if not inputs['k'][0] == "":
 		k_input = int(inputs['k'][0])
@@ -79,7 +85,8 @@ def recluster():
 		# clusters = json_coms_categorizer.run(doc_source=docs, k=temp_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
 
 	# return render_template('coms_clusters.html', clusters=clusters, stop_words=stop_words_list)
-	clusters = json_coms_categorizer.run(doc_source=docs, k=true_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+	# clusters = json_coms_categorizer.run(doc_source=docs, k=true_k, n=n_top_words, added_stop_word=addStopwordInput, removed_stop_word=removeStopwordInput)
+	clusters = json_coms_categorizer.run(doc_source=docs, k=true_k, n=n_top_words, user_in_stop_words=stopwords)
 
 	return json.dumps(clusters)
 

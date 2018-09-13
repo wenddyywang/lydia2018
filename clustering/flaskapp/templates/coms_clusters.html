@@ -53,7 +53,7 @@
 						console.log(data[d].length);
 						for(var i = 0; i<data[d].length; i++){
 							// $('#stopWordsRow').append("<span class='stopword' id='sw_" + data[d][i] + "' value='" + data[d][i] + "'" + data[d][i] +"</span>");	
-							 $('#stopWordsRow').append("<span class='stopword' id='w_" + data[d][i] + "'> " + data[d][i] + " <i class='fa fa-times-circle' aria-hidden='true'></i></span>");
+							 $('#stopWordsRow').append("<span class='stopword' id='wbox_" + data[d][i] + "' onclick='removeStopword(this.id)'> " + data[d][i] + " <i class='fa fa-times-circle' aria-hidden='true'></i></span>");
 						}
 						// $('#stopWordsRow').append(data[d].toString());
 						console.log(data[d].toString());
@@ -275,15 +275,25 @@
 				
 			}
 
-			$('.stopword').click(function(){
-				$('#form').append("<input type='hidden' name='removedStopWord' value='" + $(this).text().trim() + "'>")
-				$(this).remove()
+			document.getElementById("stopwordIn").addEventListener("keyup", function(event) {
+				event.preventDefault();
+
+				if (event.keyCode === 13) {
+					var addedSw = $('#stopwordIn').val().trim();
+					$('#form').append("<input type='hidden' name='stopword' id='w_" + addedSw + "' value='" + addedSw + "'>");
+					$('#stopWordsRow').append("<span class='stopword' id='wbox_" + addedSw + "' onclick='removeStopword(this.id)'> " + addedSw + " <i class='fa fa-times-circle' aria-hidden='true'></i></span>");
+					$('#stopwordIn').val('');
+				}
 			});
 
 			//$(function(){
 			$('#recalcBtn').click(function(){
 				// var user = $('#txtUsername').val();
 				// var pass = $('#txtPassword').val();
+				if($('#stopwordIn').val() !== ''){
+					$('#form').append("<input type='hidden' name='stopword' id='w_" + $('#stopwordIn').val() + "' value='" + $('#stopwordIn').val() + "'>");
+				}
+				
 				aggregateDocsForReclustering();
 				$.ajax({
 					url: '/recluster',
@@ -304,6 +314,10 @@
 			$('#recalcNewSeedBtn').click(function(){
 				// var user = $('#txtUsername').val();
 				// var pass = $('#txtPassword').val();
+				if($('#stopwordIn').val() !== ''){
+					$('#form').append("<input type='hidden' name='stopword' id='w_" + $('#stopwordIn').val() + "' value='" + $('#stopwordIn').val() + "'>");
+				
+				}
 				aggregateDocsForReclustering();
 				$.ajax({
 					url: '/reclusterNewSeed',
@@ -378,19 +392,19 @@
 							<div class='col-md-12'> 
 								<form id='form' name='stopwordInput'>
 									Add Stop Word: 
-									<input type='text' class='textbox' name='addStopword'> 
-									Remove Stop Word: 
-									<input type='text' class='textbox' name='removeStopword'> 
+									<input type='text' id='stopwordIn' class='textbox' name='stopwords'> 
+<!-- 									Remove Stop Word: 
+									<input type='text' class='textbox' name='removeStopword'>  -->
 									Number of Clusters: 
 									<input type='text' class='textbox' name='k'> 
 									N Top Words: 
 									<input type='text' class='textbox' name='nTopWords'> 
-									<br> 
-									<button class='reclusterBtn' id='recalcNewSeedBtn' name='reclusterBtn' type='button' value='recalcDiffSeed'> 
-										Re-Cluster with New Seed 
-									</button> 
+									<!-- <br>  -->
 									<button class='reclusterBtn' id='recalcBtn' name='reclusterBtn' type='button' value='recalcSameSeed'>	
 										Re-Cluster 
+									</button> 
+									<button class='reclusterBtn' id='recalcNewSeedBtn' name='reclusterBtn' type='button' value='recalcDiffSeed'> 
+										Re-Cluster with New Seed 
 									</button> 
 								</form>
 								<br> 

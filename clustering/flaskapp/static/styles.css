@@ -12,8 +12,9 @@
 	color: rgba(169, 169, 169, 0.8);
 }
 button{
-	margin: 10;
-	float: right;
+	margin-left: 10;
+	margin-right: 10;
+	/*float: right;*/
 }
 .clusterData{
     border-bottom: 1px solid black;
@@ -84,7 +85,8 @@ h3{
 	background-color: rgba(37,101,222,0.6) !important;
 }
 .textBox{
-	width: 140px;
+	width: 120px;
+	margin-right: 6px;
 }
 #topRow{
 	padding-top: 10;
