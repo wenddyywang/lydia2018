@@ -99,56 +99,56 @@ function invalidateDocument(xId){
 	var element = document.getElementById(sentenceId);
 	var clusterId = sentenceId.substring(0, sentenceId.indexOf("sentence"));
 	var numInvalid = parseInt($('#' + clusterId + 'Summary .summaryDocCount > i').text());
-	if(element.className === "badDoc"){
-		element.className = "neutralDoc";
-		$('#' + clusterId + 'Summary .summaryDocCount > i').text(" " + parseInt(numInvalid - 1));
-		$('#' + clusterId + sentenceId + 'badData').remove();
-	}
-	else{
-		element.className = "badDoc";
-		$('#' + clusterId + 'Summary .summaryDocCount > i').text(" " + parseInt(numInvalid + 1));
+	// if(element.className === "badDoc"){
+	// 	element.className = "neutralDoc";
+	// 	$('#' + clusterId + 'Summary .summaryDocCount > i').text(" " + parseInt(numInvalid - 1));
+	// 	$('#' + clusterId + sentenceId + 'badData').remove();
+	// }
+	// else{
+	element.className = "badDoc";
+	$('#' + clusterId + 'Summary .summaryDocCount > i').text(" " + parseInt(numInvalid + 1));
 
-		var span = element.getElementsByClassName('sentenceTxt')[0];
-	    var str = span.innerHTML.substring(4, span.innerHTML.lastIndexOf('" (')) + span.innerHTML.substring(span.innerHTML.lastIndexOf('(')) + '\n';
-	    str = str.replace(/"/g, "'").trim();
-	    $('#invalidNavForm').append("<input type='hidden' name=\"" + clusterId + sentenceId + "badData\" value=\"" + str + "\">");
+	var span = element.getElementsByClassName('sentenceTxt')[0];
+    var str = span.innerHTML.substring(4, span.innerHTML.lastIndexOf('" (')) + span.innerHTML.substring(span.innerHTML.lastIndexOf('(')) + '\n';
+    str = str.replace(/"/g, "'").trim();
+    $('#invalidNavForm').append("<input type='hidden' name=\"" + clusterId + sentenceId + "badData\" value=\"" + str + "\">");
 
-	    if($('#miscCluster').is(":hidden")){
-	    	$('#miscCluster').show();
-	    	$("#homeSummaries").append("<div class='summary'>\
-	    									<a href='#miscCluster' id='miscTitleSummary'> Miscellaneous </a>\
-	    									<div id='miscSummaryXDiv'><i class='fas fa-times fa-2x'></i></div>\
-	    									<div id='miscsummaryDocCount'></div>\
-	    								</div>");
+    if($('#miscCluster').is(":hidden")){
+    	$('#miscCluster').show();
+    	$("#homeSummaries").append("<div class='summary'>\
+    									<a href='#miscCluster' id='miscTitleSummary'> Miscellaneous </a>\
+    									<div id='miscSummaryXDiv'><i class='fas fa-times fa-2x'></i></div>\
+    									<div id='miscsummaryDocCount'></div>\
+    								</div>");
 
-	    	var summaries = document.getElementsByClassName('summary');
-	    	for(var i = 0; i<summaries.lenght; i++){
-	    		console.log(summaries[i]);
-	    	}
-	    	var numSummaries = summaries.length;
-	    	if(numSummaries > 0){
-	    		$('#miscSummaryXDiv').height($('.summaryFirstWord').height());
-	    	}
-	    	console.log("num summaries: " + numSummaries);
-	    	var screenPercent = 100/numSummaries + "%";
-			$('#homeSummaries .summary').css('width', screenPercent);
-	    }
+    	var summaries = document.getElementById('homeSummaries').getElementsByClassName('summary');
+    	for(var i = 0; i<summaries.length; i++){
+    		console.log(summaries[i]);
+    	}
+    	var numSummaries = summaries.length;
+    	if(numSummaries > 0){
+    		$('#miscSummaryXDiv').height($('.summaryFirstWord').height());
+    	}
+    	console.log("num summaries: " + numSummaries);
+    	var screenPercent = 100/numSummaries + "%";
+		$('#homeSummaries .summary').css('width', screenPercent);
+    }
 
-	    $('#' + sentenceId).fadeOut(650, function(){
-            $('#' + sentenceId).appendTo('#miscBody').fadeIn(500, function(){
-            	var numMisc = document.getElementById('miscCluster').getElementsByClassName('sentenceTxt').length;
-            	if(numMisc === 1){
-            		$('#miscsummaryDocCount').text(numMisc + " doc");
-            	}
-            	else{
-            		$('#miscsummaryDocCount').text(numMisc + " docs");
-            	}
-            });
+    $('#' + sentenceId).fadeOut(650, function(){
+        $('#' + sentenceId).appendTo('#miscBody').fadeIn(500, function(){
+        	var numMisc = document.getElementById('miscCluster').getElementsByClassName('sentenceTxt').length;
+        	if(numMisc === 1){
+        		$('#miscsummaryDocCount').text(numMisc + " doc");
+        	}
+        	else{
+        		$('#miscsummaryDocCount').text(numMisc + " docs");
+        	}
         });
+    });
 
         
 
-	}
+	// }
 	
 }
 

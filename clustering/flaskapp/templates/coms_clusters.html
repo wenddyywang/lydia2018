@@ -46,7 +46,7 @@
 				var numClusters = 0;
 				for(d in data){
 					if(d === "Document count"){
-						$('#pageTitle').append("<span id='homeTotalDocCount'> Total Document Count: " + data[d] + " (Remaining: <span id='homeNumDocsRemaining'></span>)</span>");
+						$('#pageTitle').append("<span id='homeTotalDocCount'> Items to cluster: " + data[d] + " /  <span id='homeNumDocsRemaining'></span></span>");
 					}
 					else if(d === "Stopwords"){
 						$('#stopWordsRow').empty();
@@ -60,15 +60,13 @@
 					}
 					else{
 						var id = d.replace(/\s+/g, '-');
-						$("#homeSummaries").append("<div class='summary' id='" + id + "Summary'><a href='#" + id + "' id='" + id + "TitleSummary'>" + d + "</a><div class='summaryFirstWord'><b>" + data[d][0]["word"] + "</b></div><div class='summaryDocCount'></div>" + "</div>");
+						$("#homeSummaries").append("<div class='summary' id='" + id + "Summary'><a href='#" + id + "' id='" + id + "TitleSummary'>" + d + "</a><div class='summaryFirstWord'><b>" + data[d][0]["word"] + "</b><span class='summaryDocCount'></span></div>" + "</div>");
 						numClusters = numClusters + 1;
 						// var element = document.getElementById('pageTitle').outerHTML;
 						var row = "<div class='row clusterData' id='" + id +"'>\
 										<div class='col-md-3'>\
 											<div class='clusterTitle' id='" + id + "Title' contenteditable='true' > \
 												"+ d + "\
-											</div>\
-											<div class='wordHeader'>Top Words: \
 											</div>\
 										</div>\
 										<div class='col-md-9'>\
@@ -99,22 +97,22 @@
 									word += (i+1) + ". <b>" + data[d][i][p] + "</b> ";
 								}
 								else if(p === "word_weight"){
-									word += "(" + data[d][i][p] + ")<br>";
+									word += "<span style='color:lightgrey'> (" + data[d][i][p] + ") </span><br>";
 									$('#homeContainer #' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
 									word = "";
 								}
 								else if(p === "sentence"){
 									var sentence = "\"..." + data[d][i][p] + "\" " + sentenceWeight;
-									$('#' + id + ' .docBody').append("<div class='neutralDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "'> <i class='fas fa-check fa-2x' id='" + id + "sentence" + sentenceCount + "check' onclick='checkDocument(this.id)'></i> <i class='fas fa-times fa-2x' id='" + id + "sentence" + sentenceCount + "X' onclick='invalidateDocument(this.id)'></i>\t<span class='sentenceTxt'>"+ sentence +"</div>");
+									$('#' + id + ' .docBody').append("<div class='neutralDoc' style='display:block;' id='" + id + "sentence" + sentenceCount + "'> <i class='fas fa-check fa-1x' id='" + id + "sentence" + sentenceCount + "check' onclick='checkDocument(this.id)'></i> <i class='fas fa-times fa-1x' id='" + id + "sentence" + sentenceCount + "X' onclick='invalidateDocument(this.id)'></i>\t<span class='sentenceTxt'>"+ sentence +"</div>");
 									sentenceCount += 1;
 									sentenceWeight = "";
 								}
 								else if(p === "sent_weight"){
-									sentenceWeight = "(" + data[d][i][p] + ")</span><br>";
+									sentenceWeight = "<span style='color:lightgrey'> (" + data[d][i][p] + ")</span><br>";
 								}
 								else if(p === "doc_count"){
-									$('#homeContainer #' + id + ' .docCount').append("Documents in cluster: "+ data[d][i][p]);
-									$('#homeSummaries #' + id + 'Summary .summaryDocCount').append(data[d][i][p] + " docs (<i class='fas fa-times'> 0</i>)")
+									$('#homeContainer #' + id + ' .docCount').append("Items: "+ data[d][i][p]);
+									$('#homeSummaries #' + id + 'Summary .summaryDocCount').append(" (" + data[d][i][p] + ")")
 								}
 								
 							}				
@@ -213,8 +211,6 @@
 										<div class='clusterTitle' id='" + id + "Title' contenteditable='true'> \
 												"+ cluster + "\
 										</div>\
-										<div class='wordHeader'>Top Words: \
-										</div>\
 									</div>\
 									<div class='col-md-9'>\
 										<div class='docHeader'>\
@@ -233,9 +229,9 @@
 						var word = wordsList[i];
 						if( i === '0' ){
 							var isolatedWord = word.substring(word.indexOf(' '), word.indexOf(' ('));
-							$("#verifiedSummaries").append("<div class='summary'><a href='#" + id + "'>" + cluster + "</a><br>" + isolatedWord + " <div id='" + id + "summaryDocCount'></div>" + "</div>");
+							$("#verifiedSummaries").append("<div class='summary'><a style='color:black' href='#" + id + "'>" + cluster + "</a><br>" + isolatedWord + " <span id='" + id + "summaryDocCount' ></span>" + "</div>");
 						}
-						$('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
+						// $('#' + id + ' .col-md-3').append("<div class='topWord'>"+ word +"</div>");
 					}
 
 					var sentences = data[cluster]['sentences'];
@@ -251,7 +247,7 @@
 					}
 
 				} //endfor
-				$('#pageTitle').append("<span id='verTotalDocCount'> Total Document Count: " + totalDocs + "</span>");
+				//$('#pageTitle').append("<span id='verTotalDocCount'> Items: " + totalDocs + "</span>");
 
 				var screenPercent;
 				if(numClusters < 2){
@@ -356,6 +352,15 @@
 				$("#verTotalDocCount").show();
 				$("#verifiedSummaries").show();
 			});
+
+			$('.sentenceTxt').dblclick(function(e) {
+		        var selection = window.getSelection() || document.getSelection() || document.selection.createRange();
+		        var word = $.trim(selection.toString());
+		        if(word != '') {
+		            alert(word);
+		        }
+		        /* use this if firefox: selection.collapse(selection.anchorNode, selection.anchorOffset); */
+		    });
 	
 			//});
 
@@ -369,8 +374,8 @@
 						<div class='row' id='topRow'> 
 							<div class='col-md-10'> 
 								<div id='pageTitle'> 
-									<h3> K-Means Text Clustering </h3> 
-									<i class='fas fa-question-circle' onclick='showHowTo()'></i> <br>
+									<h3> Insight Mining </h3> 
+									<br>
 								</div> 
 							</div> 
 							<div class='col-md-1'> 
@@ -391,23 +396,23 @@
 						<div class='row'> 
 							<div class='col-md-12'> 
 								<form id='form' name='stopwordInput'>
-									Add Stop Word: 
+									Stop Word: 
 									<input type='text' id='stopwordIn' class='textbox' name='stopwords'> 
 <!-- 									Remove Stop Word: 
 									<input type='text' class='textbox' name='removeStopword'>  -->
-									Number of Clusters: 
-									<input type='text' class='textbox' name='k'> 
-									N Top Words: 
-									<input type='text' class='textbox' name='nTopWords'> 
+									<!-- Number of Clusters:  -->
+									<!-- <input type='text' class='textbox' name='k'>  -->
+									<!-- N Top Words:  -->
+									<!-- <input type='text' class='textbox' name='nTopWords'>  -->
 									<!-- <br>  -->
 									<button class='reclusterBtn' id='recalcBtn' name='reclusterBtn' type='button' value='recalcSameSeed'>	
 										Re-Cluster 
 									</button> 
 									<button class='reclusterBtn' id='recalcNewSeedBtn' name='reclusterBtn' type='button' value='recalcDiffSeed'> 
-										Re-Cluster with New Seed 
+										New Seed 
 									</button> 
 								</form>
-								<br> 
+								
 							</div> 
 						</div> 
 						<div class='row'> 
@@ -417,7 +422,7 @@
 						<div class='row'> 
 							<div class='col-md-12' id='clusterSummaries'> 
 								<div> 
-									Overview: 
+									
 									<div id='homeSummaries'> 
 									</div> 
 									<div id='verifiedSummaries'> 

@@ -271,9 +271,9 @@ def append_mark_tag(sentence, keys, token_dict, highlight_colors):
         if stemmed_word in keys:
             i = keys.index(stemmed_word)
             if i < len(highlight_colors):
-                appended_sent += '<mark style=\"background-color:' + highlight_colors[i] + '\"> <b>' + word + '</b></mark> '
+                appended_sent += '<span style=\"color:' + highlight_colors[i] + '\"> <b>' + word + '</b></span> '
             else:
-                appended_sent += '<mark style=\"background-color:rgba(220,230,250,'+opacity+')\"> <b>' + word + '</b></mark> '
+                appended_sent += '<span style=\"color:rgba(220,230,250,'+opacity+')\"> <b>' + word + '</b></span> '
         else:
             appended_sent += word + ' ' 
     return appended_sent.replace("\"", "'").strip()
@@ -307,7 +307,7 @@ stop_words = read_stop_words("stopwords.csv")
 rand_int = random.randint(0, 1000)
 true_k = 5
 num_top_words = 7
-opacity = str(.8)
+opacity = str(1)
 # doc_source = "COMS4170Insight.txt"
 
 def new_seed():
@@ -419,9 +419,9 @@ def run(doc_source='COMS4170Insight.txt', k=5, n=7, user_in_stop_words=[]):
                         shortest_word = val
                 original_key += shortest_word + " "
             if len(keys)-1 < len(highlight_colors):
-                original_key = "<mark style='background-color:" + highlight_colors[len(keys)-1] + "'>" + original_key.strip() + "</mark>"
+                original_key = "<span style='color:" + highlight_colors[len(keys)-1] + "'>" + original_key.strip() + "</span>"
             else:
-                original_key = "<mark style='background-color:rgba(220,230,250,"+opacity+")>" + original_key.strip() + "</mark>"
+                original_key = "<span style='color:rgba(220,230,250,"+opacity+")>" + original_key.strip() + "</span>"
 
             data['Cluster %d' % i].append({  
                 'word': original_key,

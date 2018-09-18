@@ -1,6 +1,11 @@
 [contenteditable] { padding: 5px; outline: 0px solid transparent; border-radius: 3px; }
 [contenteditable]:not(:focus) { border: 2px dashed #ddd; }
 [contenteditable]:hover { border: 2px solid #51a7e8; box-shadow: inset 0 2px 2px rgba(0,0,0,0.075),0 0 5px rgba(81,167,232,0.5); }
+
+a{
+	color:black;
+}
+
 #backCover{
 	position: fixed;
 	background: rgba(255,255,255, 1);
@@ -18,7 +23,7 @@ button{
 }
 .clusterData{
     border-bottom: 1px solid black;
-    padding: 10 10;
+    padding: 25 0 25 0;
 }
 #clusterSummaries{
 	border-bottom: 1px solid black;
@@ -40,17 +45,20 @@ button{
 .fa-check{
 	color: green;
 }
-.fa-question-circle {
-	cursor: pointer;
+.fa-home{
+	color: lightgrey;
 }
 .fa-times{
-	color: red;
+	color: grey;
+}
+.fas{
+	cursor: pointer;
 }
 .goodDoc{
 	color: green;
 }
 .goodDoc, .badDoc, .neutralDoc{
-	cursor: pointer;
+	/*cursor: pointer;*/
 	margin-bottom: 20;
 }
 h3{
@@ -58,6 +66,7 @@ h3{
 }
 #header{
 	position: fixed;
+	width: 1110px;
 	display: block;
 	background: rgba(255,255,255, 1);
 	z-index: 999;
@@ -79,7 +88,6 @@ h3{
 }
 .summary{
 	float: left;
-	text-align: center;
 }
 .summary mark{
 	background-color: rgba(37,101,222,0.6) !important;
