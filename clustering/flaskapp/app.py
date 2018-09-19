@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import json_coms_categorizer
+import doc_processor
 import json
 from flask_wtf import FlaskForm
 from wtforms import StringField
@@ -21,17 +22,38 @@ def index():
 		home_clusters = json_coms_categorizer.run()
 	return render_template('coms_clusters.html', clusters=home_clusters)
 
-# @app.route('/test', methods=['GET', 'POST'])
-# def test():
-# 	global true_k
-# 	global n_top_words
+@app.route('/rawdocs', methods=['GET', 'POST'])
+def rawdocs():
+	rawdocs = doc_processor.read_documents()
+	return render_template('home.html', rawdocs=rawdocs)
 
-# 	inputs = dict(request.form)
+@app.route('/insights', methods=['GET', 'POST'])
+def insights():
+	inputs = dict(request.form)
+	indicators = inputs['indWords'][0].split(', ')
+	return json.dumps(doc_processor.slice_insight(indicators))
 
-# 	new_stop_word = inputs['addStopword']
-# 	new_k = inputs['k']
+@app.route('/cluster', methods=['POST'])
+def cluster():
 
-# 	return json.dumps({'status':'OK','stop_word': new_stop_word,'k':new_k})
+	inputs = dict(request.form)
+	print(inputs)
+	docs = inputs['clusterBtn']
+
+	# addStopwordInput = inputs['addStopword'][0]
+	# if not addStopwordInput == "":
+	# 	print("added stop word: " + addStopwordInput)
+	# 	stop_words_list.add(addStopwordInput)
+
+	# removeStopwordInput = inputs['removeStopword'][0]
+	# if not removeStopwordInput == "" and removeStopwordInput in stop_words_list:
+	# 	print("removed stop word: " + removeStopwordInput)
+	# 	stop_words_list.remove(removeStopwordInput)
+
+
+	clusters = json_coms_categorizer.run()
+	return render_template('coms_clusters.html', clusters=clusters)
+
 
 @app.route('/recluster', methods=['POST'])
 def recluster():

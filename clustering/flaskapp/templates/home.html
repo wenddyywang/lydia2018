@@ -1,0 +1,168 @@
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Homepage</title>
+	<meta name="description" content="text clustering UI">
+	<meta name="author" content="wendy">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+	<script type = "text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+	<!--  <meta http-equiv="cache-control" content="no-cache, must-revalidate, post-check=0, pre-check=0" />
+	 <meta http-equiv="cache-control" content="max-age=0" />
+	 <meta http-equiv="expires" content="0" />
+	 <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+	 <meta http-equiv="pragma" content="no-cache" /> -->
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="../static/styles.css" />
+
+	<script type="text/javascript" src="../static/script.js"></script>
+
+<!-- 	<style>
+	#textBody{
+		overflow-y: scroll;
+	}
+	</style> -->
+
+</head>
+
+<body>
+	<script>
+		$(document).ready(function(){
+			// var d = JSON.parse(JSON.stringify('{{ rawdocs | tojson }}'));
+			// var data = jQuery.parseJSON( d );
+			$("#filler").height($("#header").outerHeight());
+			$("#backCover").height($("#header").outerHeight());
+			$("#insightsContainer").hide();
+
+			var count = 1;
+			{% for doc in rawdocs %}
+				var d = '{{doc}}';
+				$('#textBody').append(count + '. ' + d + '<br><br>');
+				count++;
+			{% endfor %}
+
+			function appendInsights(data){
+				$("#insightsContainer").show();
+				var cntr = 1
+				for( d in data ){
+					var docList = data[d];
+					console.log(docList);
+					for( var i = 0; i < docList.length; i++){
+						$('#inTextBody').append(cntr + '. <span class="sentenceTxt">' + docList[i] + '</span><br><br>');
+						cntr += 1;
+					}
+					
+				}
+			}
+
+			function aggregateDocsForClustering(){
+				var docs = document.getElementById('insightsContainer').getElementsByClassName("sentenceTxt");
+				for(var i = 0; i < docs.length; i++){
+					var docText = doc[i].innerText;
+					var txt = docText.replace(/[^A-Za-z-\s]/g,"").replace(/\s{2,}/g, " ");
+					$('#submitForm').append("<input type='hidden' name='clusterBtn' value='" + txt + "'>");
+				}
+				
+			}
+
+			$('#goBtn').click(function(){
+				if(document.getElementById("indicatorWordIn").value !== ""){
+					$.ajax({
+						url: '/insights',
+						data: $('#indForm').serialize(),
+						type: 'POST',
+						success: function(response){
+							var d = JSON.parse(JSON.stringify(response));
+							var data = jQuery.parseJSON( d );
+							$("#homeContainer").hide();
+							$("#insightsContainer").show();
+							appendInsights(data);
+							aggregateDocsForClustering();
+						},
+						error: function(error){
+							console.log(error);
+						}
+					});					
+				}
+			});
+
+			$('#clusterBtn').click(function(){
+				// var user = $('#txtUsername').val();
+				// var pass = $('#txtPassword').val();
+				aggregateDocsForClustering();
+				// $.ajax({
+				// 	url: '/cluster',
+				// 	data: $('#form').serialize(),
+				// 	type: 'POST',
+				// 	success: function(response){
+				// 		var d = JSON.parse(JSON.stringify(response));
+				// 		var data = jQuery.parseJSON( d );
+				// 		clearDocHtml();
+				// 		appendHomeHtml(data);
+				// 	},
+				// 	error: function(error){
+				// 		console.log(error);
+				// 	}
+				// });
+			});
+		});
+	</script>
+
+	<div class='container'>
+		<div  id='header'>
+			<div class='row'>
+				<h3> Insight Mining </h3>
+			</div>
+			<div class='row'>
+				<div class='col-md-12'> 
+					<form id='indForm' name='indInForm'>
+						Indicator Word: 
+						<input type='text' id='indicatorWordIn' class='textbox' name='indWords'> 
+			<!-- 									Remove Stop Word: 
+						<input type='text' class='textbox' name='removeStopword'>  -->
+						<!-- Number of Clusters:  -->
+						<!-- <input type='text' class='textbox' name='k'>  -->
+						<!-- N Top Words:  -->
+						<!-- <input type='text' class='textbox' name='nTopWords'>  -->
+						<!-- <br>  -->
+						<button id='goBtn' name='goBtn' type='button'>	
+							Gather Insights 
+						</button> 
+					</form>
+					<form id="submitForm" action="{{ url_for('cluster') }}" method='post'>
+						<button id='clusterBtn' name='clusterBtn' type='submit' value='clusterDocs'>	
+							Cluster 
+						</button> 
+					</form>
+				</div> 
+			</div> 
+			<div class='row'>
+				<h4> Documents: </h4>
+			</div>
+		</div>
+		<div id='backCover'> 
+		</div> 
+		<div id='filler'> 
+		</div>
+
+		<div id="homeContainer">
+			<div class='row'>
+				<div class='col-md-12' id='textBody'>
+				</div>
+			</div>
+		</div>
+		<div id="insightsContainer">
+			<div class='row'>
+				<div class='col-md-12' id='inTextBody'>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
